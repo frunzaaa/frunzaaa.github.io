@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Necaz Software</title>
+<meta name="description" content="Put the site description here.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600;9..144,900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="logo">
+    <span class="logo-mark">◣</span>
+    <span class="logo-text">Necaz<span class="accent">.</span>Software</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="active">Home</a></li>
+    <li><a href="apps.html">Apps</a></li>
+    <li><a href="blog.html">Blog</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-status">
+    <span class="status-dot"></span>
+    <span>drinking coffee</span>
+  </div>
+</nav>
+
+<main>
+
+  <section class="hero">
+    <div class="hero-meta">
+      <span>↳ solo developer</span>
+      <span id="live-clock">—</span>
+    </div>
+    <h3 class="hero-title">
+      <span class="line">Necaz</span>
+      <span class="line">Software</span>
+      <span class="line"><em class="italic">a software developing company</em></span>
+    </h3>
+    <p class="hero-sub">
+      Hi. I'm the person behind Necaz Software. I make apps and games as a one-man studio, releasing what I'd want to use myself.
+    </p>
+    <div class="hero-actions">
+      <a href="apps.html" class="btn btn-primary">Go to apps </a>
+      <a href="blog.html" class="btn btn-ghost">See developer Blog</a>
+    </div>
+  </section>
+
+
+  <section class="featured">
+    <div class="section-head">
+      <span class="section-tag">/// current work</span>
+      <h2>Two apps.<br><em class="italic">Many plans</em>.</h2>
+    </div>
+
+    <article class="project">
+      <div class="project-num"></div>
+      <div class="project-info">
+        <div class="project-tags">
+          <span class="tag tag-accent">indie</span>
+          <span class="tag tag-accent">horror</span>
+          <span class="tag">in development</span>
+        </div>
+        <h3>Minutes to Die</h3>
+        <p>A horror-survival game set in an abandoned Soviet-style apartment block. Collect valuables and escape before the night gets too dangerous. Features a unique heart rate system — keep your pulse under control or it's game over.</p>
+        <div class="project-platforms">
+          <span>▸ Android</span>
+          <span>▸ Windows</span>
+        </div>
+        <a href="minutes-to-die.html" class="project-link">Click for details</a>
+      </div>
+      <div class="project-visual">[ put an image or preview here ]</div>
+    </article>
+
+    <article class="project reverse">
+      <div class="project-num"></div>
+      <div class="project-info">
+        <div class="project-tags">
+          <span class="tag tag-accent">Personal finance</span>
+          <span class="tag">internal testing</span>
+        </div>
+        <h3>QuickOrg</h3>
+        <p>Your personal money manager — simple, fast, fully private. No internet, no tracking, all your data stays on your phone. Track income, expenses, funds, and see exactly where your money goes.</p>
+        <div class="project-platforms">
+          <span>▸ Android</span>
+          <span>▸ iOS</span>
+        </div>
+        <a href="quickorg.html" class="project-link">Click for details</a>
+      </div>
+      <div class="project-visual">[ put an image or preview here ]</div>
+    </article>
+  </section>
+
+  <section class="manifesto">
+    <blockquote>
+      „Made by one person, for people who appreciate things made with care."
+    </blockquote>
+    <div class="signature">— Leafy Developer</div>
+  </section>
+
+  <section class="contact" id="contact">
+    <div class="section-head">
+      <h2><em class="italic">Contact</em></h2>
+    </div>
+    <p>Open for collabs, feedback, and questions. I read everything.</p>
+    <div class="contact-links">
+      <a href="mailto:frunzaandy16@gmail.com">frunzaandy16@gmail.com</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <div class="logo">
+        <span class="logo-mark">◣</span>
+        <span class="logo-text">Necaz<span class="accent"></span>Software</span>
+      </div>
+    </div>
+    <div>
+      <h4>Navigate</h4>
+      <a href="index.html">Home</a>
+      <a href="apps.html">Apps</a>
+      <a href="blog.html">Blog</a>
+    </div>
+    <div>
+      <h4>Apps</h4>
+      <a href="minutes-to-die.html">Minutes to Die</a>
+      <a href="quickorg.html">QuickOrg</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© Necaz Software</span>
+  </div>
+</footer>
+
+<script>
+  // Live clock with date, time and user's time zone
+  function actualizeazaCeas() {
+    const acum = new Date();
+    const luni = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+
+    const zi = acum.getDate().toString().padStart(2, '0');
+    const luna = luni[acum.getMonth()];
+    const an = acum.getFullYear();
+    const ora = acum.getHours().toString().padStart(2, '0');
+    const minut = acum.getMinutes().toString().padStart(2, '0');
+    const secunda = acum.getSeconds().toString().padStart(2, '0');
+
+    let fus = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (fus.includes('/')) fus = fus.split('/').pop().replace('_', ' ');
+
+    const text = `${zi} ${luna} ${an} · ${ora}:${minut}:${secunda} · ${fus}`;
+    const el = document.getElementById('live-clock');
+    if (el) el.textContent = text;
+  }
+
+  actualizeazaCeas();
+  setInterval(actualizeazaCeas, 1000);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog — Necaz Software</title>
+<meta name="description" content="Developer blog by Necaz Software.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600;9..144,900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="logo">
+    <span class="logo-mark">◣</span>
+    <span class="logo-text">Necaz<span class="accent">.</span>Software</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="apps.html">Apps</a></li>
+    <li><a href="blog.html" class="active">Blog</a></li>
+    <li><a href="index.html#contact">Contact</a></li>
+  </ul>
+  <div class="nav-status">
+    <span class="status-dot"></span>
+    <span>drinking coffee</span>
+  </div>
+</nav>
+
+<main>
+  <section class="page-header">
+    <span class="section-tag">/// dev journal</span>
+    <h1>Blog<em class="italic">.</em></h1>
+    <p>Put a short description of the blog here. What you'll write about, how often, for whom.</p>
+  </section>
+
+  <!-- Admin section: login or add post form -->
+  <div id="admin-section"></div>
+
+  <section class="blog-list" id="blog-list">
+    <!-- posts appear here -->
+  </section>
+
+  <div class="blog-empty" id="blog-empty">
+    <p>No post yet</p>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <div class="logo">
+        <span class="logo-mark">◣</span>
+        <span class="logo-text">Necaz<span class="accent">.</span>Software</span>
+      </div>
+    </div>
+    <div>
+      <h4>Navigate</h4>
+      <a href="index.html">Home</a>
+      <a href="apps.html">Apps</a>
+      <a href="blog.html">Blog</a>
+    </div>
+    <div>
+      <h4>Apps</h4>
+      <a href="minutes-to-die.html">Minutes to Die</a>
+      <a href="quickorg.html">QuickOrg</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>Necaz Software 2026</span>
+    <a href="#" id="admin-link" onclick="toggleAdminLogin(); return false;" style="color: var(--text-muted); cursor: pointer;">Admin</a>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script>
+  const POSTARI_KEY = 'necaz_postari';
+  const VOTURI_KEY = 'necaz_voturi'; // ce a votat acest user, per postare id
+
+  function getPostari() {
+    const data = localStorage.getItem(POSTARI_KEY);
+    return data ? JSON.parse(data) : [];
+  }
+
+  function salveazaPostari(postari) {
+    localStorage.setItem(POSTARI_KEY, JSON.stringify(postari));
+  }
+
+  function getVoturi() {
+    const data = localStorage.getItem(VOTURI_KEY);
+    return data ? JSON.parse(data) : {};
+  }
+
+  function salveazaVoturi(voturi) {
+    localStorage.setItem(VOTURI_KEY, JSON.stringify(voturi));
+  }
+
+  function generateazaId() {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+  }
+
+  // ========== adaugare/editare ==========
+  function adaugaPostare() {
+    if (!esteAdmin()) return;
+    const titlu = document.getElementById('post-title').value.trim();
+    const categorie = document.getElementById('post-category').value.trim();
+    const continut = document.getElementById('post-content').value.trim();
+
+    if (!titlu || !continut) {
+      alert('Title and content are required.');
+      return;
+    }
+
+    const postari = getPostari();
+    postari.unshift({
+      id: generateazaId(),
+      titlu,
+      categorie: categorie || 'general',
+      continut,
+      data: Date.now(),
+      likes: 0,
+      dislikes: 0
+    });
+    salveazaPostari(postari);
+
+    document.getElementById('post-title').value = '';
+    document.getElementById('post-category').value = '';
+    document.getElementById('post-content').value = '';
+
+    afiseazaPostari();
+  }
+
+  function stergePostare(idx) {
+    if (!esteAdmin()) return;
+    if (!confirm('Are you sure you want to delete this post?')) return;
+    const postari = getPostari();
+    postari.splice(idx, 1);
+    salveazaPostari(postari);
+    afiseazaPostari();
+  }
+
+  // intra in mod edit pentru postarea idx
+  let editIndex = null;
+  function intraEdit(idx) {
+    if (!esteAdmin()) return;
+    editIndex = idx;
+    afiseazaPostari();
+  }
+
+  function anuleazaEdit() {
+    editIndex = null;
+    afiseazaPostari();
+  }
+
+  function salveazaEdit(idx) {
+    if (!esteAdmin()) return;
+    const titlu = document.getElementById('edit-title-' + idx).value.trim();
+    const categorie = document.getElementById('edit-category-' + idx).value.trim();
+    const continut = document.getElementById('edit-content-' + idx).value.trim();
+
+    if (!titlu || !continut) {
+      alert('Title and content are required.');
+      return;
+    }
+
+    const postari = getPostari();
+    postari[idx].titlu = titlu;
+    postari[idx].categorie = categorie || 'general';
+    postari[idx].continut = continut;
+    postari[idx].editat = Date.now();
+    salveazaPostari(postari);
+
+    editIndex = null;
+    afiseazaPostari();
+  }
+
+  // ========== like / dislike ==========
+  function voteaza(idx, tip) {
+    const postari = getPostari();
+    const post = postari[idx];
+    if (!post) return;
+
+    // asigura compatibilitate cu postari vechi care nu aveau id
+    if (!post.id) {
+      post.id = generateazaId();
+    }
+    if (typeof post.likes !== 'number') post.likes = 0;
+    if (typeof post.dislikes !== 'number') post.dislikes = 0;
+
+    const voturi = getVoturi();
+    const votVechi = voturi[post.id]; // 'like', 'dislike' sau undefined
+
+    if (votVechi === tip) {
+      // utilizatorul anuleaza votul (a dat click pe acelasi buton)
+      if (tip === 'like') post.likes = Math.max(0, post.likes - 1);
+      else post.dislikes = Math.max(0, post.dislikes - 1);
+      delete voturi[post.id];
+    } else {
+      // schimba votul sau voteaza prima oara
+      if (votVechi === 'like') post.likes = Math.max(0, post.likes - 1);
+      if (votVechi === 'dislike') post.dislikes = Math.max(0, post.dislikes - 1);
+      if (tip === 'like') post.likes += 1;
+      else post.dislikes += 1;
+      voturi[post.id] = tip;
+    }
+
+    salveazaPostari(postari);
+    salveazaVoturi(voturi);
+    afiseazaPostari();
+  }
+
+  // ========== admin panel ==========
+  function randAdmin() {
+    const sec = document.getElementById('admin-section');
+    if (esteAdmin()) {
+      sec.innerHTML = `
+        <section class="blog-add-section">
+          <div class="admin-bar">
+            <span class="admin-bar-status">Admin mode</span>
+            <button class="btn btn-danger" onclick="logoutAdmin()">Exit admin</button>
+          </div>
+          <div class="blog-add-form">
+            <h2>Add a new post</h2>
+            <p>Posts are saved locally in your browser.</p>
+            <div class="form-group">
+              <label for="post-title">Title</label>
+              <input type="text" id="post-title" placeholder="Put the post title here">
+            </div>
+            <div class="form-group">
+              <label for="post-category">Category</label>
+              <input type="text" id="post-category" placeholder="e.g. dev log, tutorial, thoughts">
+            </div>
+            <div class="form-group">
+              <label for="post-content">Content</label>
+              <textarea id="post-content" placeholder="Put the post text here..."></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="adaugaPostare()">Publish post →</button>
+          </div>
+        </section>
+      `;
+    } else {
+      sec.innerHTML = '';
+    }
+  }
+
+  function toggleAdminLogin() {
+    if (esteAdmin()) {
+      logoutAdmin();
+      return;
+    }
+    const sec = document.getElementById('admin-section');
+    if (sec.querySelector('.admin-login')) {
+      sec.innerHTML = '';
+      return;
+    }
+    sec.innerHTML = `
+      <section class="admin-login">
+        <span class="section-tag">/// admin only</span>
+        <p>Enter the password to publish.</p>
+        <div class="admin-login-form">
+          <input type="password" id="admin-password" placeholder="password"
+                 onkeypress="if(event.key==='Enter') loginAdmin()">
+          <button class="btn btn-primary" onclick="loginAdmin()">Enter →</button>
+        </div>
+      </section>
+    `;
+    setTimeout(() => document.getElementById('admin-password').focus(), 50);
+    sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ========== rendering ==========
+  function afiseazaPostari() {
+    randAdmin();
+    const lista = document.getElementById('blog-list');
+    const gol = document.getElementById('blog-empty');
+    const postari = getPostari();
+    const admin = esteAdmin();
+    const voturi = getVoturi();
+
+    if (postari.length === 0) {
+      lista.innerHTML = '';
+      gol.style.display = 'block';
+      return;
+    }
+
+    gol.style.display = 'none';
+    lista.innerHTML = postari.map((p, idx) => {
+      // asigura compatibilitate cu postari vechi
+      const likes = p.likes || 0;
+      const dislikes = p.dislikes || 0;
+      const votUser = p.id ? voturi[p.id] : undefined;
+
+      // daca asta este postarea in editare, afiseaza form-ul de edit
+      if (admin && editIndex === idx) {
+        return `
+          <article class="blog-post blog-post-editing">
+            <div class="blog-meta">
+              <div>${formateazaData(p.data)}</div>
+              <div>· editing</div>
+            </div>
+            <div class="blog-edit-form">
+              <div class="form-group">
+                <label>Title</label>
+                <input type="text" id="edit-title-${idx}" value="${escapeHtml(p.titlu)}">
+              </div>
+              <div class="form-group">
+                <label>Category</label>
+                <input type="text" id="edit-category-${idx}" value="${escapeHtml(p.categorie)}">
+              </div>
+              <div class="form-group">
+                <label>Content</label>
+                <textarea id="edit-content-${idx}">${escapeHtml(p.continut)}</textarea>
+              </div>
+              <div style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-primary" onclick="salveazaEdit(${idx})">Save</button>
+                <button class="btn btn-ghost" onclick="anuleazaEdit()">Cancel</button>
+              </div>
+            </div>
+            <div></div>
+          </article>
+        `;
+      }
+
+      const adminBtns = admin ? `
+        <div class="blog-actions">
+          <button class="blog-edit" onclick="intraEdit(${idx})" title="Edit">✎</button>
+          <button class="blog-delete" onclick="stergePostare(${idx})" title="Delete">×</button>
+        </div>
+      ` : '<div></div>';
+
+      const editatMark = p.editat ? `<span class="blog-edited">· edited</span>` : '';
+
+      return `
+        <article class="blog-post">
+          <div class="blog-meta">
+            <div>${formateazaData(p.data)}</div>
+            <div>· ${escapeHtml(p.categorie)} ${editatMark}</div>
+          </div>
+          <div>
+            <h3>${escapeHtml(p.titlu)}</h3>
+            <p>${escapeHtml(p.continut)}</p>
+            <div class="blog-votes">
+              <button class="vote-btn ${votUser === 'like' ? 'voted-like' : ''}"
+                      onclick="voteaza(${idx}, 'like')" title="Like">
+                <span class="vote-icon">▲</span>
+                <span class="vote-count">${likes}</span>
+              </button>
+              <button class="vote-btn ${votUser === 'dislike' ? 'voted-dislike' : ''}"
+                      onclick="voteaza(${idx}, 'dislike')" title="Dislike">
+                <span class="vote-icon">▼</span>
+                <span class="vote-count">${dislikes}</span>
+              </button>
+            </div>
+          </div>
+          ${adminBtns}
+        </article>
+      `;
+    }).join('');
+  }
+
+  // init
+  afiseazaPostari();
+</script>
+
+</body>
+</html>
