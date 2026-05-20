@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Blog — Necaz Software</title>
-<meta name="description" content="Developer blog by Necaz Software.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600;9..144,900&display=swap" rel="stylesheet">
@@ -75,66 +74,71 @@
   </div>
 </footer>
 
-<!-- Firebase SDK -->
+<!-- firebase-status.js initializeaza Firebase si gestioneaza status-ul admin -->
+<script src="script.js"></script>
+<script type="module" src="firebase-status.js"></script>
+
+<!-- Firebase imports pentru blog (functii adaugare/editare/voturi) -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import {
-    getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc,
-    query, orderBy, serverTimestamp, increment
+    collection, addDoc, doc, deleteDoc, updateDoc,
+    query, orderBy, onSnapshot, serverTimestamp, increment
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  // ====== AICI PUI CHEILE TALE FIREBASE ======
-  const firebaseConfig = {
-    apiKey: "AIzaSyAiRu-qtxFlZQyqSYfDSyQMbEPseFtVuO4",
-    authDomain: "necaz-software.firebaseapp.com",
-    projectId: "necaz-software",
-    storageBucket: "necaz-software.firebasestorage.app",
-    messagingSenderId: "1055961660317",
-    appId: "1:1055961660317:web:844b28d89e89c6ebe10d74"
-  };
-  // ===========================================
+  // asteapta ca firebase-status.js sa initializeze db
+  function asteaptaFirebase() {
+    return new Promise(resolve => {
+      const verifica = () => {
+        if (window.firebaseDb) {
+          resolve();
+        } else {
+          setTimeout(verifica, 50);
+        }
+      };
+      verifica();
+    });
+  }
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+  await asteaptaFirebase();
+  const db = window.firebaseDb;
 
-  // Expun functiile global ca sa le pot folosi din scriptul de mai jos
-  window.firebaseDb = db;
+  // expun functiile global
   window.firebaseFns = {
-    collection, addDoc, getDocs, doc, deleteDoc, updateDoc,
-    query, orderBy, serverTimestamp, increment
+    collection, addDoc, doc, deleteDoc, updateDoc,
+    query, orderBy, onSnapshot, serverTimestamp, increment
   };
+  window.firebaseDb = db;
   window.firebaseReady = true;
 
-  // Trigger initial load
-  if (window.afiseazaPostari) window.afiseazaPostari();
+  // porneste ascultarea live a postarilor
+  if (window.startLiveBlog) window.startLiveBlog();
 </script>
 
-<script src="script.js"></script>
 <script>
   // ====== STATE ======
   let editIndex = null;
-  let postariCache = []; // ultimele postari incarcate, ca sa avem context la edit/delete/vote
+  let postariCache = [];
+  let unsubscribeBlog = null;
 
-  // ====== HELPER pentru voturile mele locale ======
-  // (ce am votat eu pe acest device, pentru fiecare postare)
+  // ====== HELPER voturi locale ======
   const VOTURI_KEY = 'necaz_voturi';
-
   function getVoturi() {
     const data = localStorage.getItem(VOTURI_KEY);
     return data ? JSON.parse(data) : {};
   }
-
   function salveazaVoturi(voturi) {
     localStorage.setItem(VOTURI_KEY, JSON.stringify(voturi));
   }
 
-  // ====== FIREBASE — citire postari ======
-  async function citestePostari() {
-    if (!window.firebaseReady) return [];
-    const { collection, getDocs, query, orderBy } = window.firebaseFns;
-    try {
-      const q = query(collection(window.firebaseDb, 'postari'), orderBy('data', 'desc'));
-      const snap = await getDocs(q);
+  // ====== LIVE BLOG cu onSnapshot ======
+  function startLiveBlog() {
+    if (!window.firebaseReady) return;
+    if (unsubscribeBlog) unsubscribeBlog();
+
+    const { collection, query, orderBy, onSnapshot } = window.firebaseFns;
+    const q = query(collection(window.firebaseDb, 'postari'), orderBy('data', 'desc'));
+
+    unsubscribeBlog = onSnapshot(q, (snap) => {
       const lista = [];
       snap.forEach(d => {
         const x = d.data();
@@ -149,12 +153,16 @@
           dislikes: x.dislikes || 0
         });
       });
-      return lista;
-    } catch (err) {
-      console.error('Error reading posts:', err);
-      return null;
-    }
+      postariCache = lista;
+      renderPosts();
+    }, (err) => {
+      console.error('Live blog error:', err);
+      const gol = document.getElementById('blog-empty');
+      gol.innerHTML = '<p>Error loading. Check Firebase config.</p>';
+      gol.style.display = 'block';
+    });
   }
+  window.startLiveBlog = startLiveBlog;
 
   // ====== FIREBASE — adaugare ======
   async function adaugaPostare() {
@@ -181,7 +189,7 @@
       document.getElementById('post-title').value = '';
       document.getElementById('post-category').value = '';
       document.getElementById('post-content').value = '';
-      await afiseazaPostari();
+      // nu trebuie sa apelam render — onSnapshot face singur
     } catch (err) {
       console.error(err);
       alert('Error saving post. Check Firebase rules.');
@@ -197,7 +205,6 @@
     const { doc, deleteDoc } = window.firebaseFns;
     try {
       await deleteDoc(doc(window.firebaseDb, 'postari', post.id));
-      await afiseazaPostari();
     } catch (err) {
       console.error(err);
       alert('Error deleting post.');
@@ -236,7 +243,6 @@
         editat: serverTimestamp()
       });
       editIndex = null;
-      await afiseazaPostari();
     } catch (err) {
       console.error(err);
       alert('Error saving edit.');
@@ -261,29 +267,17 @@
       else updates.dislikes = increment(-1);
       delete voturi[post.id];
     } else {
+      // schimba sau adauga vot
       if (votVechi === 'like') updates.likes = increment(-1);
       if (votVechi === 'dislike') updates.dislikes = increment(-1);
-      if (tip === 'like') updates.likes = increment(updates.likes ? -1 + 1 : 1);
-      else updates.dislikes = increment(updates.dislikes ? -1 + 1 : 1);
-
-      // simplificare: rescriem corect
-      const u = {};
-      if (votVechi === 'like') u.likes = increment(-1);
-      if (votVechi === 'dislike') u.dislikes = increment(-1);
-      if (tip === 'like') {
-        u.likes = increment(votVechi === 'like' ? -1 : 1);
-      } else {
-        u.dislikes = increment(votVechi === 'dislike' ? -1 : 1);
-      }
-      Object.assign(updates, u);
-
+      if (tip === 'like') updates.likes = increment(votVechi === 'like' ? 0 : 1);
+      else updates.dislikes = increment(votVechi === 'dislike' ? 0 : 1);
       voturi[post.id] = tip;
     }
 
     try {
       await updateDoc(doc(window.firebaseDb, 'postari', post.id), updates);
       salveazaVoturi(voturi);
-      await afiseazaPostari();
     } catch (err) {
       console.error(err);
     }
@@ -350,6 +344,7 @@
 
   // ====== RENDERING ======
   function renderPosts() {
+    randAdmin();
     const lista = document.getElementById('blog-list');
     const gol = document.getElementById('blog-empty');
     const admin = esteAdmin();
@@ -434,28 +429,6 @@
       `;
     }).join('');
   }
-
-  async function afiseazaPostari() {
-    randAdmin();
-    if (!window.firebaseReady) return;
-    const gol = document.getElementById('blog-empty');
-    gol.innerHTML = '<p>Loading...</p>';
-    gol.style.display = 'block';
-
-    const lista = await citestePostari();
-    if (lista === null) {
-      gol.innerHTML = '<p>Error loading. Check Firebase config.</p>';
-      return;
-    }
-    postariCache = lista;
-    renderPosts();
-  }
-
-  // expun functia in window ca sa fie apelabila si din module-ul de Firebase
-  window.afiseazaPostari = afiseazaPostari;
-
-  // daca Firebase e deja gata cand ajungem aici, afisam
-  if (window.firebaseReady) afiseazaPostari();
 </script>
 
 </body>

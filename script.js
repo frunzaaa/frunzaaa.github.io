@@ -17,6 +17,10 @@ function loginAdmin() {
   if (!input) return;
   if (input.value === ADMIN_PASSWORD) {
     localStorage.setItem(ADMIN_KEY, "yes");
+    // porneste heartbeat-ul de status inainte de reload
+    if (window.necazAdmin && window.necazAdmin.porneșteHeartbeat) {
+      window.necazAdmin.porneșteHeartbeat();
+    }
     location.reload();
   } else {
     alert("Wrong password.");
@@ -27,7 +31,13 @@ function loginAdmin() {
 function logoutAdmin() {
   if (!confirm("Are you sure you want to exit admin mode?")) return;
   localStorage.removeItem(ADMIN_KEY);
-  location.reload();
+  // opreste heartbeat si marcheaza offline
+  if (window.necazAdmin) {
+    if (window.necazAdmin.opresteHeartbeat) window.necazAdmin.opresteHeartbeat();
+    if (window.necazAdmin.marcheazaOffline) window.necazAdmin.marcheazaOffline();
+  }
+  // mic delay ca sa apuce sa scrie in Firebase
+  setTimeout(() => location.reload(), 300);
 }
 
 // anti-XSS helper for user text

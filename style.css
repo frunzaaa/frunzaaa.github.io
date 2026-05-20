@@ -953,10 +953,88 @@ main { max-width: 1280px; margin: 0 auto; padding: 0 2.5rem; }
 }
 
 @media (max-width: 600px) {
-  .nav-links { gap: 1rem; font-size: 0.8rem; }
-  .hero-meta { flex-direction: column; gap: 0.3rem; align-items: flex-start; }
-  .screenshots { grid-template-columns: 1fr; }
+  /* navbar — compact si lizibil */
+  .nav { padding: 0.8rem 1rem; flex-wrap: wrap; gap: 0.5rem; }
+  .nav-links { gap: 1rem; font-size: 0.75rem; order: 3; width: 100%; justify-content: center; padding-top: 0.5rem; border-top: 1px solid var(--border); }
+  .logo-text { font-size: 0.85rem; }
+
+  /* padding mai mic pentru tot */
+  main, .footer { padding-left: 1rem; padding-right: 1rem; }
+
+  /* hero — titlul mai mic, butoanele unul sub altul */
+  .hero { padding: 3rem 0 2rem; }
+  .hero-meta { flex-direction: column; gap: 0.3rem; align-items: flex-start; margin-bottom: 2rem; font-size: 0.65rem; }
+  .hero-title { font-size: clamp(2rem, 12vw, 3.5rem); }
+  .hero-sub { font-size: 0.9rem; padding-left: 0.75rem; }
+  .hero-actions { flex-direction: column; align-items: stretch; gap: 0.5rem; }
+  .hero-actions .btn { justify-content: center; }
+
+  /* sectiuni — margini mai mici */
+  .featured { padding: 3rem 0; }
+  .section-head h2 { margin-bottom: 2rem; font-size: clamp(1.8rem, 7vw, 2.5rem); }
+
+  /* proiecte */
+  .project { padding: 2rem 0; }
+  .project-info h3 { font-size: 2rem; }
+  .project-platforms { flex-wrap: wrap; gap: 0.8rem; }
+  .project-visual { height: 160px; }
+
+  /* manifesto */
+  .manifesto { padding: 4rem 0; }
+  .manifesto blockquote { font-size: clamp(1.2rem, 5vw, 1.8rem); }
+
+  /* contact */
+  .contact { padding: 3rem 0; }
+  .contact-links { font-size: 1.1rem; }
+  .contact-links a { word-break: break-all; }
+
+  /* footer */
+  .footer { padding-top: 3rem; padding-bottom: 1.5rem; }
+  .footer-grid { gap: 2rem; margin-bottom: 2rem; }
+
+  /* page header (apps, blog) */
+  .page-header { padding: 3rem 0 2rem; }
+  .page-header h1 { font-size: clamp(2.2rem, 10vw, 3.5rem); }
+
+  /* app detail pages */
+  .app-detail { padding: 2.5rem 0; }
+  .app-hero { gap: 1.5rem; margin-bottom: 3rem; padding-bottom: 3rem; }
+  .app-hero h1 { font-size: clamp(2rem, 10vw, 3.5rem); }
+  .app-hero .tagline { font-size: 1.1rem; }
+  .section-block { padding: 2.5rem 0; }
+  .section-block h2 { font-size: 1.8rem; }
+
+  /* update list — etichete mai compacte */
+  .update-version { font-size: 0.85rem; }
+  .update-content h4 { font-size: 1.1rem; }
+
+  /* screenshots */
+  .screenshots { grid-template-columns: 1fr; gap: 1rem; }
+
+  /* form de feedback */
+  .feedback-form { padding: 1.5rem; }
+  .feedback-form h3 { font-size: 1.3rem; }
+
+  /* blog */
+  .blog-post { padding: 1.5rem 0; }
+  .blog-post h3 { font-size: 1.4rem; }
+  .blog-add-form { padding: 1.5rem; }
+  .blog-add-form h2 { font-size: 1.4rem; }
+  .blog-actions { flex-direction: row; }
+  .admin-bar { flex-direction: column; gap: 0.5rem; align-items: flex-start; padding: 0.8rem 1rem; }
   .admin-login-form { flex-direction: column; }
+  .blog-votes { flex-wrap: wrap; }
+
+  /* footer-bottom (mobile) — pune admin sub copyright */
+  .footer-bottom { align-items: flex-start; }
+}
+
+/* breakpoint suplimentar pentru telefoane foarte mici */
+@media (max-width: 380px) {
+  .nav-links { gap: 0.6rem; font-size: 0.7rem; }
+  .hero-title { font-size: 2rem; }
+  .stat-num { font-size: 2.5rem; }
+  .btn { padding: 0.7rem 1.2rem; font-size: 0.75rem; }
 }
 /* ===========================
    BLOG — edit & vote additions
