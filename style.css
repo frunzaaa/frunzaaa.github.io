@@ -1129,3 +1129,148 @@ main { max-width: 1280px; margin: 0 auto; padding: 0 2.5rem; }
   border-color: var(--text-dim);
   color: var(--text);
 }
+
+/* ===========================
+   ADMIN ONLINE — verde + glow
+   =========================== */
+
+.nav-status.admin-online .status-dot {
+  background: #4ade80;
+  box-shadow: 0 0 8px #4ade80;
+  animation: pulseGreen 1.5s infinite;
+}
+
+.nav-status.admin-online span:last-child {
+  color: #4ade80;
+  font-weight: 700;
+}
+
+@keyframes pulseGreen {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 8px #4ade80, 0 0 16px rgba(74, 222, 128, 0.4);
+  }
+  50% {
+    opacity: 0.6;
+    box-shadow: 0 0 16px #4ade80, 0 0 24px rgba(74, 222, 128, 0.6);
+  }
+}
+
+/* tranziții line între cele două stări */
+.status-dot {
+  transition: background 0.4s, box-shadow 0.4s;
+}
+.nav-status span:last-child {
+  transition: color 0.4s;
+}
+
+/* ===========================
+   LIKE / DISLIKE — verde / roșu
+   =========================== */
+
+.vote-btn .vote-icon {
+  transition: transform 0.2s, color 0.2s;
+}
+
+/* like = verde */
+.vote-btn:hover .vote-icon:first-child,
+.vote-btn[onclick*="'like'"] .vote-icon {
+  color: #4ade80;
+}
+
+.vote-btn[onclick*="'dislike'"] .vote-icon {
+  color: #ef4444;
+}
+
+.vote-btn.voted-like {
+  background: rgba(74, 222, 128, 0.12);
+  border-color: #4ade80;
+  color: #4ade80;
+}
+.vote-btn.voted-like .vote-icon { color: #4ade80; }
+
+.vote-btn.voted-dislike {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: #ef4444;
+  color: #ef4444;
+}
+.vote-btn.voted-dislike .vote-icon { color: #ef4444; }
+
+/* animație când dai click — triunghiul sare puțin */
+@keyframes triangleBumpUp {
+  0% { transform: translateY(0); }
+  40% { transform: translateY(-6px) scale(1.3); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes triangleBumpDown {
+  0% { transform: translateY(0); }
+  40% { transform: translateY(6px) scale(1.3); }
+  100% { transform: translateY(0); }
+}
+
+.vote-btn.bump-like .vote-icon {
+  animation: triangleBumpUp 0.4s ease-out;
+}
+.vote-btn.bump-dislike .vote-icon {
+  animation: triangleBumpDown 0.4s ease-out;
+}
+
+/* animație când contorul se schimbă (de la altcineva) */
+@keyframes countFlash {
+  0% { color: var(--accent); transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+
+.vote-count.flash-up {
+  animation: countFlash 0.5s ease-out;
+  color: #4ade80 !important;
+}
+
+.vote-count.flash-down {
+  animation: countFlash 0.5s ease-out;
+  color: #ef4444 !important;
+}
+
+/* ===========================
+   BLOG POSTS — animație apariție / actualizare
+   =========================== */
+
+@keyframes postSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes postFlash {
+  0% { background: rgba(217, 106, 31, 0.15); }
+  100% { background: transparent; }
+}
+
+.blog-post.is-new {
+  animation: postSlideIn 0.5s ease-out;
+}
+
+.blog-post.is-updated {
+  animation: postFlash 1.5s ease-out;
+}
+
+@keyframes postFadeOut {
+  to {
+    opacity: 0;
+    transform: translateX(20px);
+    max-height: 0;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+.blog-post.is-removing {
+  animation: postFadeOut 0.4s ease-out forwards;
+  overflow: hidden;
+}

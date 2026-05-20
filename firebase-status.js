@@ -35,9 +35,11 @@ const OFFLINE_THRESHOLD_MS = 90 * 1000; // 90 secunde fara heartbeat = offline
 
 // ===== ASCULTA SCHIMBARI DE STATUS (toate paginile) =====
 function updateStatusUI(isOnline) {
-  const statusElements = document.querySelectorAll('.nav-status span:last-child');
-  statusElements.forEach(el => {
-    el.textContent = isOnline ? 'admin online' : 'drinking coffee';
+  const navStatus = document.querySelectorAll('.nav-status');
+  navStatus.forEach(ns => {
+    ns.classList.toggle('admin-online', isOnline);
+    const txt = ns.querySelector('span:last-child');
+    if (txt) txt.textContent = isOnline ? 'admin online' : 'drinking coffee';
   });
 }
 

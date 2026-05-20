@@ -35,12 +35,9 @@
     <p>Put a short description of the blog here. What you'll write about, how often, for whom.</p>
   </section>
 
-  <!-- Admin section -->
   <div id="admin-section"></div>
 
-  <section class="blog-list" id="blog-list">
-    <!-- posts appear here -->
-  </section>
+  <section class="blog-list" id="blog-list"></section>
 
   <div class="blog-empty" id="blog-empty">
     <p>Loading...</p>
@@ -74,43 +71,33 @@
   </div>
 </footer>
 
-<!-- firebase-status.js initializeaza Firebase si gestioneaza status-ul admin -->
 <script src="script.js"></script>
 <script type="module" src="firebase-status.js"></script>
 
-<!-- Firebase imports pentru blog (functii adaugare/editare/voturi) -->
 <script type="module">
   import {
     collection, addDoc, doc, deleteDoc, updateDoc,
     query, orderBy, onSnapshot, serverTimestamp, increment
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  // asteapta ca firebase-status.js sa initializeze db
   function asteaptaFirebase() {
     return new Promise(resolve => {
       const verifica = () => {
-        if (window.firebaseDb) {
-          resolve();
-        } else {
-          setTimeout(verifica, 50);
-        }
+        if (window.firebaseDb) resolve();
+        else setTimeout(verifica, 50);
       };
       verifica();
     });
   }
 
   await asteaptaFirebase();
-  const db = window.firebaseDb;
 
-  // expun functiile global
   window.firebaseFns = {
     collection, addDoc, doc, deleteDoc, updateDoc,
     query, orderBy, onSnapshot, serverTimestamp, increment
   };
-  window.firebaseDb = db;
   window.firebaseReady = true;
 
-  // porneste ascultarea live a postarilor
   if (window.startLiveBlog) window.startLiveBlog();
 </script>
 
@@ -119,8 +106,9 @@
   let editIndex = null;
   let postariCache = [];
   let unsubscribeBlog = null;
+  let isFirstLoad = true;
 
-  // ====== HELPER voturi locale ======
+  // voturi locale
   const VOTURI_KEY = 'necaz_voturi';
   function getVoturi() {
     const data = localStorage.getItem(VOTURI_KEY);
@@ -130,7 +118,7 @@
     localStorage.setItem(VOTURI_KEY, JSON.stringify(voturi));
   }
 
-  // ====== LIVE BLOG cu onSnapshot ======
+  // ====== LIVE BLOG cu detectare modificari pentru animatii ======
   function startLiveBlog() {
     if (!window.firebaseReady) return;
     if (unsubscribeBlog) unsubscribeBlog();
@@ -140,6 +128,14 @@
 
     unsubscribeBlog = onSnapshot(q, (snap) => {
       const lista = [];
+      const schimbari = { adaugate: [], modificate: [], sterse: [] };
+
+      snap.docChanges().forEach(change => {
+        if (change.type === 'added') schimbari.adaugate.push(change.doc.id);
+        if (change.type === 'modified') schimbari.modificate.push(change.doc.id);
+        if (change.type === 'removed') schimbari.sterse.push(change.doc.id);
+      });
+
       snap.forEach(d => {
         const x = d.data();
         lista.push({
@@ -153,8 +149,28 @@
           dislikes: x.dislikes || 0
         });
       });
+
+      // detectează schimbări de voturi (likes/dislikes) pentru animație flash pe contor
+      const voturiSchimbate = {};
+      lista.forEach(p => {
+        const vechi = postariCache.find(c => c.id === p.id);
+        if (vechi) {
+          if (vechi.likes !== p.likes) {
+            voturiSchimbate[p.id] = voturiSchimbate[p.id] || {};
+            voturiSchimbate[p.id].likesUp = p.likes > vechi.likes;
+            voturiSchimbate[p.id].likes = true;
+          }
+          if (vechi.dislikes !== p.dislikes) {
+            voturiSchimbate[p.id] = voturiSchimbate[p.id] || {};
+            voturiSchimbate[p.id].dislikesUp = p.dislikes > vechi.dislikes;
+            voturiSchimbate[p.id].dislikes = true;
+          }
+        }
+      });
+
       postariCache = lista;
-      renderPosts();
+      renderPosts(isFirstLoad ? null : { ...schimbari, voturiSchimbate });
+      isFirstLoad = false;
     }, (err) => {
       console.error('Live blog error:', err);
       const gol = document.getElementById('blog-empty');
@@ -164,7 +180,7 @@
   }
   window.startLiveBlog = startLiveBlog;
 
-  // ====== FIREBASE — adaugare ======
+  // ====== ADAUGARE ======
   async function adaugaPostare() {
     if (!esteAdmin()) return;
     if (!window.firebaseReady) { alert('Firebase not ready.'); return; }
@@ -189,21 +205,27 @@
       document.getElementById('post-title').value = '';
       document.getElementById('post-category').value = '';
       document.getElementById('post-content').value = '';
-      // nu trebuie sa apelam render — onSnapshot face singur
     } catch (err) {
       console.error(err);
       alert('Error saving post. Check Firebase rules.');
     }
   }
 
-  // ====== FIREBASE — stergere ======
+  // ====== STERGERE ======
   async function stergePostare(idx) {
     if (!esteAdmin()) return;
     if (!confirm('Are you sure you want to delete this post?')) return;
     const post = postariCache[idx];
     if (!post) return;
+
+    // animatie de iesire
+    const el = document.querySelector(`[data-post-id="${post.id}"]`);
+    if (el) el.classList.add('is-removing');
+
     const { doc, deleteDoc } = window.firebaseFns;
     try {
+      // mic delay ca animatia sa aiba timp
+      await new Promise(r => setTimeout(r, 400));
       await deleteDoc(doc(window.firebaseDb, 'postari', post.id));
     } catch (err) {
       console.error(err);
@@ -249,11 +271,20 @@
     }
   }
 
-  // ====== LIKE / DISLIKE ======
+  // ====== VOTE — cu animatie pe buton ======
   async function voteaza(idx, tip) {
     if (!window.firebaseReady) return;
     const post = postariCache[idx];
     if (!post) return;
+
+    // animatie locala instantanee pe buton
+    const btnSelector = `[data-post-id="${post.id}"] .vote-btn[data-vote-type="${tip}"]`;
+    const btn = document.querySelector(btnSelector);
+    if (btn) {
+      btn.classList.remove('bump-like', 'bump-dislike');
+      void btn.offsetWidth; // restart animatie
+      btn.classList.add(tip === 'like' ? 'bump-like' : 'bump-dislike');
+    }
 
     const voturi = getVoturi();
     const votVechi = voturi[post.id];
@@ -262,12 +293,10 @@
     const updates = {};
 
     if (votVechi === tip) {
-      // anuleaza votul
       if (tip === 'like') updates.likes = increment(-1);
       else updates.dislikes = increment(-1);
       delete voturi[post.id];
     } else {
-      // schimba sau adauga vot
       if (votVechi === 'like') updates.likes = increment(-1);
       if (votVechi === 'dislike') updates.dislikes = increment(-1);
       if (tip === 'like') updates.likes = increment(votVechi === 'like' ? 0 : 1);
@@ -342,8 +371,8 @@
     sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  // ====== RENDERING ======
-  function renderPosts() {
+  // ====== RENDERING cu animatii ======
+  function renderPosts(schimbari) {
     randAdmin();
     const lista = document.getElementById('blog-list');
     const gol = document.getElementById('blog-empty');
@@ -365,7 +394,7 @@
 
       if (admin && editIndex === idx) {
         return `
-          <article class="blog-post blog-post-editing">
+          <article class="blog-post blog-post-editing" data-post-id="${p.id}">
             <div class="blog-meta">
               <div>${formateazaData(p.data)}</div>
               <div>· editing</div>
@@ -402,8 +431,19 @@
 
       const editatMark = p.editat ? `<span class="blog-edited">· edited</span>` : '';
 
+      // clase pentru animatii
+      let postClass = 'blog-post';
+      if (schimbari) {
+        if (schimbari.adaugate && schimbari.adaugate.includes(p.id)) postClass += ' is-new';
+        else if (schimbari.modificate && schimbari.modificate.includes(p.id)) postClass += ' is-updated';
+      }
+
+      const v = schimbari?.voturiSchimbate?.[p.id];
+      const likeFlash = v?.likes ? (v.likesUp ? 'flash-up' : 'flash-down') : '';
+      const dislikeFlash = v?.dislikes ? (v.dislikesUp ? 'flash-up' : 'flash-down') : '';
+
       return `
-        <article class="blog-post">
+        <article class="${postClass}" data-post-id="${p.id}">
           <div class="blog-meta">
             <div>${formateazaData(p.data)}</div>
             <div>· ${escapeHtml(p.categorie)} ${editatMark}</div>
@@ -413,14 +453,16 @@
             <p>${escapeHtml(p.continut)}</p>
             <div class="blog-votes">
               <button class="vote-btn ${votUser === 'like' ? 'voted-like' : ''}"
+                      data-vote-type="like"
                       onclick="voteaza(${idx}, 'like')" title="Like">
                 <span class="vote-icon">▲</span>
-                <span class="vote-count">${likes}</span>
+                <span class="vote-count ${likeFlash}">${likes}</span>
               </button>
               <button class="vote-btn ${votUser === 'dislike' ? 'voted-dislike' : ''}"
+                      data-vote-type="dislike"
                       onclick="voteaza(${idx}, 'dislike')" title="Dislike">
                 <span class="vote-icon">▼</span>
-                <span class="vote-count">${dislikes}</span>
+                <span class="vote-count ${dislikeFlash}">${dislikes}</span>
               </button>
             </div>
           </div>
@@ -428,6 +470,18 @@
         </article>
       `;
     }).join('');
+
+    // curata clasele de animatie dupa ce s-au jucat
+    if (schimbari) {
+      setTimeout(() => {
+        document.querySelectorAll('.is-new, .is-updated').forEach(el => {
+          el.classList.remove('is-new', 'is-updated');
+        });
+        document.querySelectorAll('.flash-up, .flash-down').forEach(el => {
+          el.classList.remove('flash-up', 'flash-down');
+        });
+      }, 1600);
+    }
   }
 </script>
 
