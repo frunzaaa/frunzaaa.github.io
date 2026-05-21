@@ -15,8 +15,8 @@
   --accent-dim: #b5551a;
   --accent-soft: rgba(217, 106, 31, 0.12);
   --accent-glow: rgba(217, 106, 31, 0.25);
-  --serif: 'Fraunces', Georgia, serif;
-  --mono: 'Space Mono', monospace;
+  --serif: 'Inter', sans-serif;
+  --mono: 'Geist Mono', monospace;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
