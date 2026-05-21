@@ -1595,3 +1595,55 @@ main { max-width: 1280px; margin: 0 auto; padding: 0 2.5rem; }
     font-size: 0.8rem;
   }
 }
+/* ===========================
+   OVERRIDE FINAL — logo-uri patrate mici peste tot
+   =========================== */
+
+/* logo mic langa titlu — patrat fortat, fara stretch */
+.app-title-logo {
+  width: 60px !important;
+  height: 60px !important;
+  aspect-ratio: 1 / 1 !important;
+  object-fit: cover !important;
+  border: 1px solid var(--border-bright) !important;
+  border-radius: 8px !important;
+  flex-shrink: 0 !important;
+  display: block !important;
+}
+
+/* container titlu + logo — aliniere */
+.app-title-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 1rem !important;
+  margin-bottom: 1rem !important;
+  flex-wrap: wrap;
+}
+
+.app-title-row h1,
+.app-title-row h3 {
+  margin: 0 !important;
+}
+
+/* scot reguli vechi care apareau in alte locuri */
+.app-logo { display: none !important; }
+.app-mockup { display: none !important; }
+.project-visual { display: none !important; }
+
+/* project (index.html) — fara mai e 2 coloane, o singura coloana */
+.project {
+  grid-template-columns: 80px 1fr !important;
+}
+
+.project.reverse .project-info { order: 0 !important; }
+
+/* MOBILE — logo si mai mic */
+@media (max-width: 600px) {
+  .app-title-logo {
+    width: 50px !important;
+    height: 50px !important;
+  }
+  .project {
+    grid-template-columns: 1fr !important;
+  }
+}

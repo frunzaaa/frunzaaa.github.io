@@ -316,10 +316,12 @@
     const updates = {};
 
     if (votVechi === tip) {
+      // toggle off — anuleaza votul
       if (tip === 'like') updates.likes = increment(-1);
       else updates.dislikes = increment(-1);
       delete voturi[post.id];
     } else {
+      // schimba sau adauga vot
       if (votVechi === 'like') updates.likes = increment(-1);
       if (votVechi === 'dislike') updates.dislikes = increment(-1);
       if (tip === 'like') updates.likes = increment(votVechi === 'like' ? 0 : 1);
@@ -327,12 +329,27 @@
       voturi[post.id] = tip;
     }
 
+    // SALVEZ LOCAL IMEDIAT (inainte de a astepta Firebase)
+    // ca sa pot re-randa culoarea corecta instant
+    salveazaVoturi(voturi);
+
+    // actualizez DOM-ul direct pe acest buton, fara re-render complet
+    actualizeazaStareaVot(post.id, voturi[post.id]);
+
+    // trimit la Firebase in background
     try {
       await updateDoc(doc(window.firebaseDb, 'postari', post.id), updates);
-      salveazaVoturi(voturi);
     } catch (err) {
       console.error(err);
     }
+  }
+
+  // actualizeaza vizual butoanele de vot fara re-render
+  function actualizeazaStareaVot(postId, vot) {
+    const likeBtn = document.querySelector(`[data-post-id="${postId}"] .vote-btn[data-vote-type="like"]`);
+    const dislikeBtn = document.querySelector(`[data-post-id="${postId}"] .vote-btn[data-vote-type="dislike"]`);
+    if (likeBtn) likeBtn.classList.toggle('voted-like', vot === 'like');
+    if (dislikeBtn) dislikeBtn.classList.toggle('voted-dislike', vot === 'dislike');
   }
 
   // ====== ADMIN PANEL ======
