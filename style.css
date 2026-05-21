@@ -1198,33 +1198,23 @@ main { max-width: 1280px; margin: 0 auto; padding: 0 2.5rem; }
   color: #ef4444;
 }
 
-/* animatie unica pentru orice schimbare de vot */
-@keyframes voteBumpLike {
-  0% { transform: scale(1); }
-  50% {
-    transform: scale(1.12);
-    background: rgba(74, 222, 128, 0.25);
-    border-color: #4ade80;
-  }
-  100% { transform: scale(1); }
+/* animatie simpla la vot — doar un flash scurt de fundal */
+@keyframes voteFlashLike {
+  0% { background: rgba(74, 222, 128, 0.4); }
+  100% { background: rgba(74, 222, 128, 0.12); }
 }
 
-@keyframes voteBumpDislike {
-  0% { transform: scale(1); }
-  50% {
-    transform: scale(1.12);
-    background: rgba(239, 68, 68, 0.25);
-    border-color: #ef4444;
-  }
-  100% { transform: scale(1); }
+@keyframes voteFlashDislike {
+  0% { background: rgba(239, 68, 68, 0.4); }
+  100% { background: rgba(239, 68, 68, 0.12); }
 }
 
 .vote-btn.bumping[data-vote-type="like"] {
-  animation: voteBumpLike 0.5s ease-out;
+  animation: voteFlashLike 0.4s ease-out;
 }
 
 .vote-btn.bumping[data-vote-type="dislike"] {
-  animation: voteBumpDislike 0.5s ease-out;
+  animation: voteFlashDislike 0.4s ease-out;
 }
 
 /* ===========================
@@ -1511,5 +1501,97 @@ main { max-width: 1280px; margin: 0 auto; padding: 0 2.5rem; }
   .screenshots-horizontal .screenshot,
   .screenshots-horizontal > img {
     width: 280px;
+  }
+}
+
+/* ===========================
+   LOGO MIC LANGA TITLU
+   =========================== */
+.app-title-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.app-title-row h1 {
+  margin: 0;
+}
+
+.app-title-logo {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border: 1px solid var(--border-bright);
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+/* app-hero — pe paginile aplicatiilor, fara mockup mare, e o singura coloana */
+.app-hero {
+  grid-template-columns: 1fr !important;
+  max-width: 800px;
+}
+
+/* ===========================
+   BETA NOTE (QuickOrg)
+   =========================== */
+.beta-note {
+  margin-top: 1rem;
+  padding: 0.8rem 1rem;
+  background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  max-width: 600px;
+}
+
+/* ===========================
+   UPDATES LIST — panou scrollabil
+   =========================== */
+.updates-list {
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.updates-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.updates-list::-webkit-scrollbar-track {
+  background: var(--bg-elev);
+}
+
+.updates-list::-webkit-scrollbar-thumb {
+  background: var(--border-bright);
+  border-radius: 4px;
+}
+
+.updates-list::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+/* ultima update fara border (in panou) */
+.updates-list .update:last-child {
+  border-bottom: none;
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
+  .app-title-row {
+    gap: 1rem;
+  }
+  .app-title-logo {
+    width: 70px;
+    height: 70px;
+  }
+  .updates-list {
+    max-height: 350px;
+  }
+  .beta-note {
+    font-size: 0.8rem;
   }
 }

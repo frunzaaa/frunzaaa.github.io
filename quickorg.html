@@ -33,19 +33,23 @@
 
     <div class="app-hero">
       <div>
-        <h1>Quick<em class="italic">Org</em>.</h1>
+        <div class="app-title-row">
+          <h1>Quick<em class="italic">Org</em>.</h1>
+          <img src="Images/quickorg logo.jpeg" alt="QuickOrg" class="app-title-logo">
+        </div>
         <p class="tagline">— fast. simple. fully offline.</p>
         <p>QuickOrg is your personal mobile money manager — designed to be simple, fast, and completely private. No internet, no cloud, no tracking. All your data stays on your phone.</p>
         <p>Use it to organize your income and expenses, see clearly where your money goes, and stay in full control of your daily, monthly, or yearly budget.</p>
         <div class="hero-actions" style="margin-top: 2rem;">
-          <a href="#feedback" class="btn btn-primary">Join testing →</a>
+          <a href="mailto:frunzaandy16@gmail.com?subject=Join%20QuickOrg%20Internal%20Testing&body=Hello%2C%20I%20want%20to%20join%20your%20program%20for%20internal%20testing%20for%20QuickOrg%20app." class="btn btn-primary" onclick="return confirmBeta();">Join Internal Testing →</a>
+          <a href="https://play.google.com/apps/internaltest/4701610440484734468" target="_blank" rel="noopener" class="btn btn-ghost">Download on Google Play</a>
         </div>
-        <div class="project-platforms" style="margin-top: 2rem;">
+        <p class="beta-note">You have to be in the internal testing program to see the app on Google Play. Click "Join Internal Testing" to send me your email — I'll add you to the list.</p>
+        <div class="project-platforms" style="margin-top: 1.5rem;">
           <span>▸ Android</span>
           <span>▸ iOS</span>
         </div>
       </div>
-      <div class="app-mockup"><img src="Images/quickorg_logo.jpeg" alt="QuickOrg"></div>
     </div>
 
 
@@ -53,10 +57,10 @@
       <h2>Screenshots</h2>
       <div class="screenshots-wrapper">
         <div class="screenshots screenshots-vertical">
-          <div class="screenshot"><img src="Images/quickorg_snapshot_1.jpeg" alt="QuickOrg screenshot 1"></div>
-          <div class="screenshot"><img src="Images/quickorg_snapshot_2.jpeg" alt="QuickOrg screenshot 2"></div>
-          <div class="screenshot"><img src="Images/quickorg_snapshot_3.jpeg" alt="QuickOrg screenshot 3"></div>
-          <div class="screenshot"><img src="Images/quickorg_snapshot_4.jpeg" alt="QuickOrg screenshot 4"></div>
+          <div class="screenshot"><img src="Images/quickorg snapshot 1.jpeg" alt="QuickOrg screenshot 1"></div>
+          <div class="screenshot"><img src="Images/quickorg snapshot 2.jpeg" alt="QuickOrg screenshot 2"></div>
+          <div class="screenshot"><img src="Images/quickorg snapshot 3.jpeg" alt="QuickOrg screenshot 3"></div>
+          <div class="screenshot"><img src="Images/quickadd_snapshot_4.jpeg" alt="QuickOrg screenshot 4"></div>
           <!-- COPIAZA ASTA pentru screenshots noi:
           -->
         </div>
@@ -264,5 +268,10 @@
 
 <script src="script.js"></script>
 <script type="module" src="firebase-status.js"></script>
+<script>
+  function confirmBeta() {
+    return confirm("This will open your email app with a pre-written message to frunzaandy16@gmail.com asking to join the QuickOrg internal testing program. Send it and I'll add you to the list.");
+  }
+</script>
 </body>
 </html>
