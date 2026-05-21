@@ -184,8 +184,50 @@
         }
       });
 
+      // verific daca aceleasi postari, doar voturi schimbate (fara adaugare/stergere/edit)
+      const aceleasiPostari = postariCache.length === lista.length &&
+        postariCache.every((p, i) => p.id === lista[i].id);
+      let doarVoturi = !isFirstLoad &&
+        aceleasiPostari &&
+        schimbari.adaugate.length === 0 &&
+        schimbari.sterse.length === 0;
+
+      if (doarVoturi) {
+        lista.forEach(p => {
+          const vechi = postariCache.find(c => c.id === p.id);
+          if (vechi && (vechi.titlu !== p.titlu || vechi.continut !== p.continut || vechi.categorie !== p.categorie)) {
+            doarVoturi = false;
+          }
+        });
+      }
+
       postariCache = lista;
-      renderPosts(isFirstLoad ? null : schimbari);
+
+      if (doarVoturi) {
+        // update direct contoarele, fara re-render
+        // + adaug flash portocaliu pe postarile modificate (visual feedback)
+        lista.forEach(p => {
+          if (!voturiSchimbate[p.id]) return;
+          const article = document.querySelector(`[data-post-id="${p.id}"]`);
+          if (!article) return;
+
+          // actualizez contoarele
+          const likeCount = article.querySelector('.vote-btn[data-vote-type="like"] .vote-count');
+          const dislikeCount = article.querySelector('.vote-btn[data-vote-type="dislike"] .vote-count');
+          if (likeCount) likeCount.textContent = p.likes || 0;
+          if (dislikeCount) dislikeCount.textContent = p.dislikes || 0;
+
+          // adaug flash portocaliu doar daca vine de la altcineva
+          if (!voturiLocaleRecente.has(p.id)) {
+            article.classList.remove('is-updated');
+            void article.offsetWidth; // restart animatie
+            article.classList.add('is-updated');
+            setTimeout(() => article.classList.remove('is-updated'), 1500);
+          }
+        });
+      } else {
+        renderPosts(isFirstLoad ? null : schimbari);
+      }
 
       // anima butoanele care s-au schimbat remote (sar peste voturile mele locale recente)
       if (!isFirstLoad) {
