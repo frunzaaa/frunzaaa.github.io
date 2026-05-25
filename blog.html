@@ -30,7 +30,7 @@
 
 <main>
   <section class="page-header">
-    <span class="section-tag">/// dev journal</span>
+    <span class="section-tag">
     <h1>Blog<em class="italic">.</em></h1>
     <p>Put a short description of the blog here. What you'll write about, how often, for whom.</p>
   </section>
@@ -102,13 +102,11 @@
 </script>
 
 <script>
-  // ====== STATE ======
   let editIndex = null;
   let postariCache = [];
   let unsubscribeBlog = null;
   let isFirstLoad = true;
 
-  // voturi locale
   const VOTURI_KEY = 'necaz_voturi';
   function getVoturi() {
     const data = localStorage.getItem(VOTURI_KEY);
@@ -118,25 +116,21 @@
     localStorage.setItem(VOTURI_KEY, JSON.stringify(voturi));
   }
 
-  // tinem evidenta voturilor pe care le-am dat noi recent, ca sa nu animam de doua ori
-  // (o data la click, apoi din nou cand revine update-ul de la Firebase)
   const voturiLocaleRecente = new Set();
   function marcheazaVotLocal(postId) {
     voturiLocaleRecente.add(postId);
     setTimeout(() => voturiLocaleRecente.delete(postId), 1500);
   }
 
-  // ====== HELPER animatie buton vot ======
   function bumpButton(postId, tip) {
     const btn = document.querySelector(`[data-post-id="${postId}"] .vote-btn[data-vote-type="${tip}"]`);
     if (!btn) return;
     btn.classList.remove('bumping');
-    void btn.offsetWidth; // restart animatie
+    void btn.offsetWidth;
     btn.classList.add('bumping');
     setTimeout(() => btn.classList.remove('bumping'), 500);
   }
 
-  // ====== LIVE BLOG cu detectare modificari pentru animatii ======
   function startLiveBlog() {
     if (!window.firebaseReady) return;
     if (unsubscribeBlog) unsubscribeBlog();
@@ -168,7 +162,6 @@
         });
       });
 
-      // detectează schimbări de voturi remote (de la alte device-uri)
       const voturiSchimbate = {};
       lista.forEach(p => {
         const vechi = postariCache.find(c => c.id === p.id);
@@ -184,7 +177,6 @@
         }
       });
 
-      // verific daca aceleasi postari, doar voturi schimbate (fara adaugare/stergere/edit)
       const aceleasiPostari = postariCache.length === lista.length &&
         postariCache.every((p, i) => p.id === lista[i].id);
       let doarVoturi = !isFirstLoad &&
@@ -204,23 +196,19 @@
       postariCache = lista;
 
       if (doarVoturi) {
-        // update direct contoarele, fara re-render
-        // + adaug flash portocaliu pe postarile modificate (visual feedback)
         lista.forEach(p => {
           if (!voturiSchimbate[p.id]) return;
           const article = document.querySelector(`[data-post-id="${p.id}"]`);
           if (!article) return;
 
-          // actualizez contoarele
           const likeCount = article.querySelector('.vote-btn[data-vote-type="like"] .vote-count');
           const dislikeCount = article.querySelector('.vote-btn[data-vote-type="dislike"] .vote-count');
           if (likeCount) likeCount.textContent = p.likes || 0;
           if (dislikeCount) dislikeCount.textContent = p.dislikes || 0;
 
-          // adaug flash portocaliu doar daca vine de la altcineva
           if (!voturiLocaleRecente.has(p.id)) {
             article.classList.remove('is-updated');
-            void article.offsetWidth; // restart animatie
+            void article.offsetWidth;
             article.classList.add('is-updated');
             setTimeout(() => article.classList.remove('is-updated'), 1500);
           }
@@ -229,10 +217,9 @@
         renderPosts(isFirstLoad ? null : schimbari);
       }
 
-      // anima butoanele care s-au schimbat remote (sar peste voturile mele locale recente)
       if (!isFirstLoad) {
         Object.keys(voturiSchimbate).forEach(postId => {
-          if (voturiLocaleRecente.has(postId)) return; // am animat deja la click
+          if (voturiLocaleRecente.has(postId)) return;
           const v = voturiSchimbate[postId];
           if (v.likes) bumpButton(postId, 'like');
           if (v.dislikes) bumpButton(postId, 'dislike');
@@ -249,7 +236,6 @@
   }
   window.startLiveBlog = startLiveBlog;
 
-  // ====== ADAUGARE ======
   async function adaugaPostare() {
     if (!esteAdmin()) return;
     if (!window.firebaseReady) { alert('Firebase not ready.'); return; }
@@ -280,20 +266,17 @@
     }
   }
 
-  // ====== STERGERE ======
   async function stergePostare(idx) {
     if (!esteAdmin()) return;
     if (!confirm('Are you sure you want to delete this post?')) return;
     const post = postariCache[idx];
     if (!post) return;
 
-    // animatie de iesire
     const el = document.querySelector(`[data-post-id="${post.id}"]`);
     if (el) el.classList.add('is-removing');
 
     const { doc, deleteDoc } = window.firebaseFns;
     try {
-      // mic delay ca animatia sa aiba timp
       await new Promise(r => setTimeout(r, 400));
       await deleteDoc(doc(window.firebaseDb, 'postari', post.id));
     } catch (err) {
@@ -302,7 +285,6 @@
     }
   }
 
-  // ====== EDIT ======
   function intraEdit(idx) {
     if (!esteAdmin()) return;
     editIndex = idx;
@@ -340,15 +322,12 @@
     }
   }
 
-  // ====== VOTE — cu animatie pe buton ======
   async function voteaza(idx, tip) {
     if (!window.firebaseReady) return;
     const post = postariCache[idx];
     if (!post) return;
 
-    // animatie locala instantanee
     bumpButton(post.id, tip);
-    // marchez ca am votat local — ca sa nu mai animez din nou cand vine update-ul de la Firebase
     marcheazaVotLocal(post.id);
 
     const voturi = getVoturi();
@@ -358,12 +337,10 @@
     const updates = {};
 
     if (votVechi === tip) {
-      // toggle off — anuleaza votul
       if (tip === 'like') updates.likes = increment(-1);
       else updates.dislikes = increment(-1);
       delete voturi[post.id];
     } else {
-      // schimba sau adauga vot
       if (votVechi === 'like') updates.likes = increment(-1);
       if (votVechi === 'dislike') updates.dislikes = increment(-1);
       if (tip === 'like') updates.likes = increment(votVechi === 'like' ? 0 : 1);
@@ -371,14 +348,10 @@
       voturi[post.id] = tip;
     }
 
-    // SALVEZ LOCAL IMEDIAT (inainte de a astepta Firebase)
-    // ca sa pot re-randa culoarea corecta instant
     salveazaVoturi(voturi);
 
-    // actualizez DOM-ul direct pe acest buton, fara re-render complet
     actualizeazaStareaVot(post.id, voturi[post.id]);
 
-    // trimit la Firebase in background
     try {
       await updateDoc(doc(window.firebaseDb, 'postari', post.id), updates);
     } catch (err) {
@@ -386,7 +359,6 @@
     }
   }
 
-  // actualizeaza vizual butoanele de vot fara re-render
   function actualizeazaStareaVot(postId, vot) {
     const likeBtn = document.querySelector(`[data-post-id="${postId}"] .vote-btn[data-vote-type="like"]`);
     const dislikeBtn = document.querySelector(`[data-post-id="${postId}"] .vote-btn[data-vote-type="dislike"]`);
@@ -394,7 +366,6 @@
     if (dislikeBtn) dislikeBtn.classList.toggle('voted-dislike', vot === 'dislike');
   }
 
-  // ====== ADMIN PANEL ======
   function randAdmin() {
     const sec = document.getElementById('admin-section');
     if (esteAdmin()) {
@@ -440,7 +411,7 @@
     }
     sec.innerHTML = `
       <section class="admin-login">
-        <span class="section-tag">/// admin only</span>
+        <span class="section-tag">
         <p>Enter the password to publish.</p>
         <div class="admin-login-form">
           <input type="password" id="admin-password" placeholder="password"
@@ -453,7 +424,6 @@
     sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  // ====== RENDERING cu animatii ======
   function renderPosts(schimbari) {
     randAdmin();
     const lista = document.getElementById('blog-list');
@@ -513,7 +483,6 @@
 
       const editatMark = p.editat ? `<span class="blog-edited">· edited</span>` : '';
 
-      // clase pentru animatii pe postare (new/updated)
       let postClass = 'blog-post';
       if (schimbari) {
         if (schimbari.adaugate && schimbari.adaugate.includes(p.id)) postClass += ' is-new';
@@ -549,7 +518,6 @@
       `;
     }).join('');
 
-    // curata clasele de animatie dupa ce s-au jucat
     if (schimbari) {
       setTimeout(() => {
         document.querySelectorAll('.is-new, .is-updated').forEach(el => {

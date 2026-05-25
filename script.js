@@ -1,10 +1,4 @@
-// ===========================
-// NECAZ SOFTWARE — admin & helpers
-// ===========================
-
-// IMPORTANT: This is a simple "password" for basic blocking.
-// Anyone who looks at the code can see it. DO NOT use important passwords here.
-// For real security you need a backend.
+// Parola simpla pentru blocare de baza. Vizibila in cod - nu folosi parole importante aici.
 const ADMIN_PASSWORD = "floricel";
 const ADMIN_KEY = "necaz_admin";
 
@@ -17,7 +11,6 @@ function loginAdmin() {
   if (!input) return;
   if (input.value === ADMIN_PASSWORD) {
     localStorage.setItem(ADMIN_KEY, "yes");
-    // porneste heartbeat-ul de status inainte de reload
     if (window.necazAdmin && window.necazAdmin.porneșteHeartbeat) {
       window.necazAdmin.porneșteHeartbeat();
     }
@@ -31,16 +24,13 @@ function loginAdmin() {
 function logoutAdmin() {
   if (!confirm("Are you sure you want to exit admin mode?")) return;
   localStorage.removeItem(ADMIN_KEY);
-  // opreste heartbeat si marcheaza offline
   if (window.necazAdmin) {
     if (window.necazAdmin.opresteHeartbeat) window.necazAdmin.opresteHeartbeat();
     if (window.necazAdmin.marcheazaOffline) window.necazAdmin.marcheazaOffline();
   }
-  // mic delay ca sa apuce sa scrie in Firebase
   setTimeout(() => location.reload(), 300);
 }
 
-// anti-XSS helper for user text
 function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
