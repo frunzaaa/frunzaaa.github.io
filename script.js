@@ -22,7 +22,9 @@ async function loginAdmin() {
 
   const rezultat = await window.necazAdmin.login(email, parola);
   if (rezultat.ok) {
-    location.reload();
+    // nu mai dam reload — onAuthStateChanged va actualiza interfata automat
+    const sec = document.getElementById('admin-section');
+    if (sec) sec.innerHTML = '';
   } else {
     alert("Login failed. Check your email and password.");
     passInput.value = "";
@@ -34,7 +36,9 @@ async function logoutAdmin() {
   if (window.necazAdmin && window.necazAdmin.logout) {
     await window.necazAdmin.logout();
   }
-  setTimeout(() => location.reload(), 300);
+  // onAuthStateChanged va actualiza interfata; curatam panoul admin
+  const sec = document.getElementById('admin-section');
+  if (sec) sec.innerHTML = '';
 }
 
 function escapeHtml(text) {

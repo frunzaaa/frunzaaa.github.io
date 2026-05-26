@@ -109,7 +109,7 @@
 
   // cand Firebase confirma login/logout, re-randam (butoanele de admin apar/dispar)
   window.onAdminStateChange = function(esteLogat) {
-    if (postariCache.length > 0 || !isFirstLoad) {
+    if (!isFirstLoad) {
       renderPosts();
     }
   };

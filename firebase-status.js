@@ -3,7 +3,8 @@ import {
   getFirestore, doc, setDoc, onSnapshot, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
-  getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
+  getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged,
+  setPersistence, browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
@@ -18,6 +19,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+
+// pastreaza sesiunea de login dupa reload / inchiderea browserului
+setPersistence(auth, browserLocalPersistence).catch((err) => {
+  console.warn('Persistence error:', err);
+});
 
 window.firebaseApp = app;
 window.firebaseDb = db;
