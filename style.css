@@ -77,12 +77,23 @@ main { animation: fadeIn 0.5s ease-out; }
 
 .nav-status {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
   font-size: 0.75rem;
   color: var(--text-dim);
   text-transform: uppercase;
   letter-spacing: 0.1em;
+  max-width: 220px;
+}
+
+.nav-status .last-active {
+  flex-basis: 100%;
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  text-transform: none;
+  margin-top: 1px;
 }
 
 .status-dot {
