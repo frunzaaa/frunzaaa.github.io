@@ -31,7 +31,7 @@
 <main>
   <section class="page-header">
     <span class="section-tag">
-    <h1>Blog<em class="italic">.</em></h1>
+    <h1>Blog<em class="italic"></em></h1>
     <p>Put a short description of the blog here. What you'll write about, how often, for whom.</p>
   </section>
 
@@ -107,7 +107,6 @@
   let unsubscribeBlog = null;
   let isFirstLoad = true;
 
-  // cand Firebase confirma login/logout, re-randam (butoanele de admin apar/dispar)
   window.onAdminStateChange = function(esteLogat) {
     if (!isFirstLoad) {
       renderPosts();
