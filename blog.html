@@ -32,7 +32,7 @@
   <section class="page-header">
     <span class="section-tag">
     <h1>Blog<em class="italic">.</em></h1>
-    <p>In this section you can see all my plans and you can vote if they are good ideas or not.</p>
+    <p>Put a short description of the blog here. What you'll write about, how often, for whom.</p>
   </section>
 
   <div id="admin-section"></div>
@@ -106,6 +106,13 @@
   let postariCache = [];
   let unsubscribeBlog = null;
   let isFirstLoad = true;
+
+  // cand Firebase confirma login/logout, re-randam (butoanele de admin apar/dispar)
+  window.onAdminStateChange = function(esteLogat) {
+    if (postariCache.length > 0 || !isFirstLoad) {
+      renderPosts();
+    }
+  };
 
   const VOTURI_KEY = 'necaz_voturi';
   function getVoturi() {
@@ -411,16 +418,18 @@
     }
     sec.innerHTML = `
       <section class="admin-login">
-        <span class="section-tag">
-        <p>Enter the password to publish.</p>
+        <span class="section-tag">/// admin only</span>
+        <p>Sign in to publish.</p>
         <div class="admin-login-form">
+          <input type="email" id="admin-email" placeholder="email"
+                 onkeypress="if(event.key==='Enter') document.getElementById('admin-password').focus()">
           <input type="password" id="admin-password" placeholder="password"
                  onkeypress="if(event.key==='Enter') loginAdmin()">
           <button class="btn btn-primary" onclick="loginAdmin()">Enter →</button>
         </div>
       </section>
     `;
-    setTimeout(() => document.getElementById('admin-password').focus(), 50);
+    setTimeout(() => document.getElementById('admin-email').focus(), 50);
     sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 

@@ -2,6 +2,9 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import {
   getFirestore, doc, setDoc, onSnapshot, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAiRu-qtxFlZQyqSYfDSyQMbEPseFtVuO4",
@@ -14,9 +17,11 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
 window.firebaseApp = app;
 window.firebaseDb = db;
+window.firebaseAuth = auth;
 
 const STATUS_DOC = doc(db, 'meta', 'adminStatus');
 const OFFLINE_THRESHOLD_MS = 90 * 1000;
@@ -117,23 +122,52 @@ function opresteHeartbeat() {
   }
 }
 
-window.necazAdmin = {
-  porneșteHeartbeat,
-  opresteHeartbeat,
-  marcheazaOffline
-};
+// ===== AUTENTIFICARE prin Firebase Auth =====
+let esteAutentificat = false;
 
-function tryStartHeartbeat() {
-  if (typeof esteAdmin === 'function' && esteAdmin()) {
-    porneșteHeartbeat();
+async function loginCuFirebase(email, parola) {
+  try {
+    await signInWithEmailAndPassword(auth, email, parola);
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: err.code };
   }
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', tryStartHeartbeat);
-} else {
-  tryStartHeartbeat();
+async function logoutDinFirebase() {
+  try {
+    marcheazaOffline();
+    opresteHeartbeat();
+    await signOut(auth);
+    return true;
+  } catch (err) {
+    console.warn('Logout error:', err);
+    return false;
+  }
 }
+
+// Firebase ne spune cand starea de login se schimba (la incarcare, login sau logout)
+onAuthStateChanged(auth, (user) => {
+  esteAutentificat = !!user;
+  if (user) {
+    porneșteHeartbeat();
+  } else {
+    opresteHeartbeat();
+  }
+  // anuntam paginile sa-si actualizeze interfata (ex: blog re-randeaza butoanele de admin)
+  if (typeof window.onAdminStateChange === 'function') {
+    window.onAdminStateChange(esteAutentificat);
+  }
+});
+
+window.necazAdmin = {
+  porneșteHeartbeat,
+  opresteHeartbeat,
+  marcheazaOffline,
+  login: loginCuFirebase,
+  logout: logoutDinFirebase,
+  esteAdmin: () => esteAutentificat
+};
 
 window.addEventListener('beforeunload', () => {
   if (heartbeatInterval) {

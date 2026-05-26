@@ -1,32 +1,38 @@
-// Parola simpla pentru blocare de baza. Vizibila in cod - nu folosi parole importante aici.
-const ADMIN_PASSWORD = "floricel";
-const ADMIN_KEY = "necaz_admin";
-
 function esteAdmin() {
-  return localStorage.getItem(ADMIN_KEY) === "yes";
+  return window.necazAdmin && window.necazAdmin.esteAdmin && window.necazAdmin.esteAdmin();
 }
 
-function loginAdmin() {
-  const input = document.getElementById('admin-password');
-  if (!input) return;
-  if (input.value === ADMIN_PASSWORD) {
-    localStorage.setItem(ADMIN_KEY, "yes");
-    if (window.necazAdmin && window.necazAdmin.porneșteHeartbeat) {
-      window.necazAdmin.porneșteHeartbeat();
-    }
+async function loginAdmin() {
+  const emailInput = document.getElementById('admin-email');
+  const passInput = document.getElementById('admin-password');
+  if (!emailInput || !passInput) return;
+
+  const email = emailInput.value.trim();
+  const parola = passInput.value;
+
+  if (!email || !parola) {
+    alert("Enter email and password.");
+    return;
+  }
+
+  if (!window.necazAdmin || !window.necazAdmin.login) {
+    alert("Authentication not ready. Please wait a moment and try again.");
+    return;
+  }
+
+  const rezultat = await window.necazAdmin.login(email, parola);
+  if (rezultat.ok) {
     location.reload();
   } else {
-    alert("Wrong password.");
-    input.value = "";
+    alert("Login failed. Check your email and password.");
+    passInput.value = "";
   }
 }
 
-function logoutAdmin() {
+async function logoutAdmin() {
   if (!confirm("Are you sure you want to exit admin mode?")) return;
-  localStorage.removeItem(ADMIN_KEY);
-  if (window.necazAdmin) {
-    if (window.necazAdmin.opresteHeartbeat) window.necazAdmin.opresteHeartbeat();
-    if (window.necazAdmin.marcheazaOffline) window.necazAdmin.marcheazaOffline();
+  if (window.necazAdmin && window.necazAdmin.logout) {
+    await window.necazAdmin.logout();
   }
   setTimeout(() => location.reload(), 300);
 }
