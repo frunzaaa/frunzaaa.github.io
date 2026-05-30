@@ -20,7 +20,6 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// pastreaza sesiunea de login dupa reload / inchiderea browserului
 setPersistence(auth, browserLocalPersistence).catch((err) => {
   console.warn('Persistence error:', err);
 });
@@ -128,7 +127,6 @@ function opresteHeartbeat() {
   }
 }
 
-// ===== AUTENTIFICARE prin Firebase Auth =====
 let esteAutentificat = false;
 
 async function loginCuFirebase(email, parola) {
@@ -152,7 +150,6 @@ async function logoutDinFirebase() {
   }
 }
 
-// Firebase ne spune cand starea de login se schimba (la incarcare, login sau logout)
 onAuthStateChanged(auth, (user) => {
   esteAutentificat = !!user;
   if (user) {
@@ -160,7 +157,6 @@ onAuthStateChanged(auth, (user) => {
   } else {
     opresteHeartbeat();
   }
-  // anuntam paginile sa-si actualizeze interfata (ex: blog re-randeaza butoanele de admin)
   if (typeof window.onAdminStateChange === 'function') {
     window.onAdminStateChange(esteAutentificat);
   }
