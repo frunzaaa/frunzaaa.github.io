@@ -1559,3 +1559,104 @@ main { max-width: 1280px; margin: 0 auto; padding: 0 2.5rem; }
     grid-template-columns: 1fr !important;
   }
 }
+.about-section {
+  max-width: 800px;
+  margin: 0 auto 4rem;
+  padding: 0 2rem;
+}
+
+.about-section h2 {
+  font-family: var(--serif);
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  margin-bottom: 1.5rem;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.about-section p {
+  color: var(--text-dim);
+  line-height: 1.7;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.about-section strong {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.diploma-container,
+.cv-container {
+  margin: 2rem 0;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  padding: 1rem;
+  border-radius: 4px;
+}
+
+.diploma-image,
+.cv-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 2px;
+}
+
+.diploma-caption {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 1rem;
+  font-style: italic;
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.skill-group {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  padding: 1.2rem 1.5rem;
+  border-radius: 4px;
+}
+
+.skill-group h4 {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin: 0 0 0.5rem;
+}
+
+.skill-group p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.about-contact {
+  border-top: 1px solid var(--border);
+  padding-top: 3rem;
+  margin-top: 4rem;
+}
+
+@media (max-width: 600px) {
+  .about-section {
+    padding: 0 1.2rem;
+    margin-bottom: 3rem;
+  }
+  .diploma-container,
+  .cv-container {
+    padding: 0.5rem;
+  }
+  .skills-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
