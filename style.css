@@ -1660,3 +1660,17 @@ main { max-width: 1280px; margin: 0 auto; padding: 0 2.5rem; }
     gap: 1rem;
   }
 }
+.blog-post-image {
+  display: block;
+  max-width: 100%;
+  border-radius: 4px;
+  margin-top: 1rem;
+  border: 1px solid var(--border);
+}
+
+.form-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.4rem;
+  margin-bottom: 0;
+}

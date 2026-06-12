@@ -162,6 +162,7 @@
           titlu: x.titlu || '',
           categorie: x.categorie || 'general',
           continut: x.continut || '',
+          imagine: x.imagine || null,
           data: x.data ? (x.data.toDate ? x.data.toDate().getTime() : x.data) : Date.now(),
           editat: x.editat ? (x.editat.toDate ? x.editat.toDate().getTime() : x.editat) : null,
           likes: x.likes || 0,
@@ -250,6 +251,7 @@
     const titlu = document.getElementById('post-title').value.trim();
     const categorie = document.getElementById('post-category').value.trim();
     const continut = document.getElementById('post-content').value.trim();
+    const imagine = document.getElementById('post-image').value.trim();
 
     if (!titlu || !continut) {
       alert('Title and content are required.');
@@ -260,6 +262,7 @@
     try {
       await addDoc(collection(window.firebaseDb, 'postari'), {
         titlu, categorie: categorie || 'general', continut,
+        imagine: imagine || null,
         data: serverTimestamp(),
         likes: 0,
         dislikes: 0
@@ -267,6 +270,7 @@
       document.getElementById('post-title').value = '';
       document.getElementById('post-category').value = '';
       document.getElementById('post-content').value = '';
+      document.getElementById('post-image').value = '';
     } catch (err) {
       console.error(err);
       alert('Error saving post. Check Firebase rules.');
@@ -308,6 +312,7 @@
     const titlu = document.getElementById('edit-title-' + idx).value.trim();
     const categorie = document.getElementById('edit-category-' + idx).value.trim();
     const continut = document.getElementById('edit-content-' + idx).value.trim();
+    const imagine = document.getElementById('edit-image-' + idx).value.trim();
 
     if (!titlu || !continut) {
       alert('Title and content are required.');
@@ -320,6 +325,7 @@
     try {
       await updateDoc(doc(window.firebaseDb, 'postari', post.id), {
         titlu, categorie: categorie || 'general', continut,
+        imagine: imagine || null,
         editat: serverTimestamp()
       });
       editIndex = null;
@@ -397,6 +403,11 @@
               <label for="post-content">Content</label>
               <textarea id="post-content" placeholder="Put the post text here..."></textarea>
             </div>
+            <div class="form-group">
+              <label for="post-image">Image filename (optional)</label>
+              <input type="text" id="post-image" placeholder="e.g. blog-post-1.jpg">
+              <p class="form-hint">If you want an image, upload the file to the Images/ folder and push it to GitHub, then write its filename here.</p>
+            </div>
             <button class="btn btn-primary" onclick="adaugaPostare()">Publish post →</button>
           </div>
         </section>
@@ -473,6 +484,10 @@
                 <label>Content</label>
                 <textarea id="edit-content-${idx}">${escapeHtml(p.continut)}</textarea>
               </div>
+              <div class="form-group">
+                <label>Image filename (optional)</label>
+                <input type="text" id="edit-image-${idx}" value="${escapeHtml(p.imagine || '')}" placeholder="e.g. blog-post-1.jpg">
+              </div>
               <div style="display: flex; gap: 0.5rem;">
                 <button class="btn btn-primary" onclick="salveazaEdit(${idx})">Save</button>
                 <button class="btn btn-ghost" onclick="anuleazaEdit()">Cancel</button>
@@ -492,6 +507,10 @@
 
       const editatMark = p.editat ? `<span class="blog-edited">· edited</span>` : '';
 
+      const imagineHtml = p.imagine
+        ? `<img src="Images/${escapeHtml(p.imagine)}" alt="" class="blog-post-image" loading="lazy" onerror="this.style.display='none'">`
+        : '';
+
       let postClass = 'blog-post';
       if (schimbari) {
         if (schimbari.adaugate && schimbari.adaugate.includes(p.id)) postClass += ' is-new';
@@ -507,6 +526,7 @@
           <div>
             <h3>${escapeHtml(p.titlu)}</h3>
             <p>${escapeHtml(p.continut)}</p>
+            ${imagineHtml}
             <div class="blog-votes">
               <button class="vote-btn ${votUser === 'like' ? 'voted-like' : ''}"
                       data-vote-type="like"
