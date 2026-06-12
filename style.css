@@ -1674,3 +1674,27 @@ main { max-width: 1280px; margin: 0 auto; padding: 0 2.5rem; }
   margin-top: 0.4rem;
   margin-bottom: 0;
 }
+
+.vote-ratio-bar {
+  flex: 1 1 80px;
+  min-width: 60px;
+  height: 8px;
+  align-self: center;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+}
+
+.vote-ratio-like {
+  height: 100%;
+  background: #4ade80;
+  transition: width 0.4s ease-out;
+}
+
+.vote-ratio-dislike {
+  height: 100%;
+  background: #ef4444;
+  transition: width 0.4s ease-out;
+}

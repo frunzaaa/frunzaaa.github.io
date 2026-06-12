@@ -214,6 +214,14 @@
           if (likeCount) likeCount.textContent = p.likes || 0;
           if (dislikeCount) dislikeCount.textContent = p.dislikes || 0;
 
+          const totalV = (p.likes || 0) + (p.dislikes || 0);
+          const likePctV = totalV > 0 ? ((p.likes || 0) / totalV * 100) : 0;
+          const dislikePctV = totalV > 0 ? ((p.dislikes || 0) / totalV * 100) : 0;
+          const likeFill = article.querySelector('.vote-ratio-like');
+          const dislikeFill = article.querySelector('.vote-ratio-dislike');
+          if (likeFill) likeFill.style.width = likePctV + '%';
+          if (dislikeFill) dislikeFill.style.width = dislikePctV + '%';
+
           if (!voturiLocaleRecente.has(p.id)) {
             article.classList.remove('is-updated');
             void article.offsetWidth;
@@ -463,6 +471,9 @@
       const likes = p.likes || 0;
       const dislikes = p.dislikes || 0;
       const votUser = voturi[p.id];
+      const total = likes + dislikes;
+      const likePct = total > 0 ? (likes / total * 100) : 0;
+      const dislikePct = total > 0 ? (dislikes / total * 100) : 0;
 
       if (admin && editIndex === idx) {
         return `
@@ -534,6 +545,10 @@
                 <span class="vote-icon">▲</span>
                 <span class="vote-count">${likes}</span>
               </button>
+              <div class="vote-ratio-bar">
+                <div class="vote-ratio-like" style="width:${likePct}%"></div>
+                <div class="vote-ratio-dislike" style="width:${dislikePct}%"></div>
+              </div>
               <button class="vote-btn ${votUser === 'dislike' ? 'voted-dislike' : ''}"
                       data-vote-type="dislike"
                       onclick="voteaza(${idx}, 'dislike')" title="Dislike">
