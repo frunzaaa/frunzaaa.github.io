@@ -41,12 +41,18 @@
         <p>Aplicație de chestionare pentru pregătirea examenului de licență. Disponibilă pe Windows și Android.</p>
 
         <div class="download-buttons">
-          <a href="chestionare-licenta.rar" download class="btn btn-primary">
-            ↓ Download RAR file for Windows
-          </a>
-          <a href="chestionare-licenta.apk" download class="btn btn-primary">
-            ↓ Download APK file for Android
-          </a>
+          <div class="download-item">
+            <a href="chestionare-licenta.rar" download class="btn btn-primary" id="btn-windows" onclick="inregistreazaDescarcare('windows')">
+              ↓ Download RAR file for Windows
+            </a>
+            <span class="download-count" id="count-windows">— descărcări</span>
+          </div>
+          <div class="download-item">
+            <a href="chestionare-licenta.apk" download class="btn btn-primary" id="btn-android" onclick="inregistreazaDescarcare('android')">
+              ↓ Download APK file for Android
+            </a>
+            <span class="download-count" id="count-android">— descărcări</span>
+          </div>
         </div>
 
         <div class="project-platforms" style="margin-top: 2rem;">
@@ -87,5 +93,78 @@
 
 <script src="script.js"></script>
 <script type="module" src="firebase-status.js"></script>
+
+<script type="module">
+  import {
+    doc, getDoc, onSnapshot, setDoc, increment
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  function asteaptaFirebase() {
+    return new Promise(resolve => {
+      const verifica = () => {
+        if (window.firebaseDb) resolve();
+        else setTimeout(verifica, 50);
+      };
+      verifica();
+    });
+  }
+
+  await asteaptaFirebase();
+
+  const db = window.firebaseDb;
+  const DOWNLOADS_DOC = doc(db, 'meta', 'downloads');
+
+  // Asigura ca documentul exista
+  async function initDoc() {
+    const snap = await getDoc(DOWNLOADS_DOC);
+    if (!snap.exists()) {
+      await setDoc(DOWNLOADS_DOC, { windows: 0, android: 0 });
+    }
+  }
+  await initDoc();
+
+  // Live counter
+  onSnapshot(DOWNLOADS_DOC, (snap) => {
+    if (!snap.exists()) return;
+    const data = snap.data();
+    const w = data.windows || 0;
+    const a = data.android || 0;
+    document.getElementById('count-windows').textContent =
+      w === 1 ? '1 descărcare' : `${w} descărcări`;
+    document.getElementById('count-android').textContent =
+      a === 1 ? '1 descărcare' : `${a} descărcări`;
+  });
+
+  // Expune functia global
+  window.inregistreazaDescarcare = async function(platform) {
+    try {
+      await setDoc(DOWNLOADS_DOC, { [platform]: increment(1) }, { merge: true });
+    } catch (err) {
+      console.warn('Download count error:', err);
+    }
+  };
+</script>
+
+<style>
+  .download-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  .download-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .download-count {
+    font-family: 'Geist Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--text-muted, #888);
+    white-space: nowrap;
+  }
+</style>
+
 </body>
 </html>

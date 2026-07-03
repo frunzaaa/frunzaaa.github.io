@@ -803,6 +803,15 @@ main { max-width: 1280px; margin: 0 auto; padding: 0 2.5rem; }
   white-space: pre-wrap;
 }
 
+.blog-post-image {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 4px;
+  margin-top: 1rem;
+  border: 1px solid var(--border);
+}
+
 .blog-delete {
   background: none;
   border: 1px solid var(--border-bright);
