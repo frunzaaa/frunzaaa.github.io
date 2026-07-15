@@ -84,9 +84,27 @@
 
   <section class="about-section">
     <h2>The full CV</h2>
-    <p>If you want the complete picture — full work history, languages, professional goals — here's the full version:</p>
-    <div class="cv-container">
-      <img src="Images/cv.png" alt="Cristian Andrei Frunză - Curriculum Vitae" class="cv-image">
+    <p>If you want the complete picture — full work history, languages, professional goals — here's the full version, available in Romanian and English:</p>
+
+    <div class="cv-switcher">
+      <div class="cv-tabs">
+        <button class="cv-tab active" data-cv="ro" type="button">🇷🇴 Română</button>
+        <button class="cv-tab" data-cv="en" type="button">🇬🇧 English</button>
+      </div>
+
+      <div class="cv-panel active" data-cv="ro">
+        <div class="cv-container">
+          <img src="Images/cv-ro.png" alt="Cristian Andrei Frunză - Curriculum Vitae (Română)" class="cv-image">
+        </div>
+        <a href="Images/cv-ro.docx" download class="btn btn-ghost cv-download">⬇ Descarcă CV (.docx)</a>
+      </div>
+
+      <div class="cv-panel" data-cv="en">
+        <div class="cv-container">
+          <img src="Images/cv-en.png" alt="Cristian Andrei Frunză - Curriculum Vitae (English)" class="cv-image">
+        </div>
+        <a href="Images/cv-en.docx" download class="btn btn-ghost cv-download">⬇ Download CV (.docx)</a>
+      </div>
     </div>
   </section>
 
@@ -128,5 +146,14 @@
 
 <script src="script.js"></script>
 <script type="module" src="firebase-status.js"></script>
+<script>
+  document.querySelectorAll('.cv-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.cv;
+      document.querySelectorAll('.cv-tab').forEach(t => t.classList.toggle('active', t === tab));
+      document.querySelectorAll('.cv-panel').forEach(p => p.classList.toggle('active', p.dataset.cv === target));
+    });
+  });
+</script>
 </body>
 </html>
