@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nyxbo — Necaz Software</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,700;1,400&family=Geist+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="logo">
+    <span class="logo-mark">◣</span>
+    <span class="logo-text">Necaz<span class="accent">.</span>Software</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="apps.html">Apps</a></li>
+    <li><a href="blog.html">Blog</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="index.html#contact">Contact</a></li>
+  </ul>
+  <div class="nav-status">
+    <span class="status-dot"></span>
+    <span>drinking coffee</span>
+  </div>
+</nav>
+
+<main>
+  <section class="app-detail">
+
+    <div class="app-hero">
+      <div>
+        <div class="app-title-row">
+          <h1>Nyx<em class="italic">bo</em></h1>
+          <img src="Images/nyxbo_logo.png" alt="Nyxbo" class="app-title-logo">
+        </div>
+        <p class="tagline">— pixel-art studio. draw, animate, export. fully offline.</p>
+        <p>Nyxbo is a fast, focused pixel-art editor that fits in your pocket. Draw sprites, build animations frame by frame, and export game-ready assets — all on your device, with no accounts, no ads, and no internet.</p>
+        <p>Built with Flutter, it runs smoothly on phones and tablets. Real RGB palettes for every bit depth (2 to 8-bit / up to 256 colors), layers, onion-skinned animation, image import for tracing, and export to spritesheets, strips, separate frames, or animated GIF.</p>
+        <div class="hero-actions" style="margin-top: 2rem;">
+          <a href="https://play.google.com/store/apps/details?id=com.nyxbo"
+             target="_blank" rel="noopener"
+             class="btn btn-primary">Go to Download Page →</a>
+          <a href="nyxbo-privacy.html" class="btn btn-ghost">Privacy Policy</a>
+        </div>
+        <p class="beta-note">Nyxbo is <strong>coming soon</strong> to Google Play and is currently in review. The download button will go live the moment it's published.</p>
+        <div class="project-platforms" style="margin-top: 1.5rem;">
+          <span>▸ Android</span>
+          <span>▸ soon on iOS</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <h2>Screenshots</h2>
+      <div class="screenshots-wrapper">
+        <div class="screenshots screenshots-vertical">
+          <div class="screenshot"><img src="Images/nyxbo_snapshot_1.png" alt="Nyxbo screenshot 1"></div>
+          <div class="screenshot"><img src="Images/nyxbo_snapshot_2.png" alt="Nyxbo screenshot 2"></div>
+          <div class="screenshot"><img src="Images/nyxbo_snapshot_3.png" alt="Nyxbo screenshot 3"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <h2>Current features</h2>
+      <p style="color: var(--text-dim); max-width: 800px;">Pencil, eraser, bucket fill, line and rectangle tools, eyedropper, and a freehand tool. Real RGB palettes for every bit depth from 2 to 8-bit (up to 256 colors) with fully undoable format switching. Layers with opacity, visibility, reordering and duplication. Frame-by-frame animation with onion-skinning and adjustable FPS. Import any image or spritesheet and trace over it. Two-finger pan &amp; zoom, move-whole-image, and fit-to-screen. Export as spritesheet PNG + JSON atlas, horizontal/vertical strips, separate frames, upscaled PNG, or animated GIF. Unlimited undo/redo. All offline — no internet, no tracking, no cloud.</p>
+    </div>
+
+    <div class="section-block">
+      <h2>Send feedback</h2>
+
+      <form class="feedback-form" id="feedback" onsubmit="event.preventDefault(); alert('Demo form. Connect to a service to receive real messages.');">
+        <h3>Bug report · idea · review</h3>
+        <p>All feedback goes straight to me.</p>
+
+        <div class="form-group">
+          <label for="rev-name">Name or alias</label>
+          <input type="text" id="rev-name" placeholder="your name here" required>
+        </div>
+
+        <div class="form-group">
+          <label for="rev-type">Type of message</label>
+          <select id="rev-type">
+            <option>Public review</option>
+            <option>Bug / Defect</option>
+            <option>Improvement idea</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="rev-message">Your message</label>
+          <textarea id="rev-message" placeholder="write your message here..." required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Send →</button>
+      </form>
+    </div>
+
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <div class="logo">
+        <span class="logo-mark">◣</span>
+        <span class="logo-text">Necaz<span class="accent">.</span>Software</span>
+      </div>
+    </div>
+    <div>
+      <h4>Navigate</h4>
+      <a href="index.html">Home</a>
+      <a href="apps.html">Apps</a>
+      <a href="blog.html">Blog</a>
+    </div>
+    <div>
+      <h4>Apps</h4>
+      <a href="minutes-to-die.html">Minutes to Die</a>
+      <a href="quickorg.html">QuickOrg2</a>
+      <a href="nyxbo.html">Nyxbo</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© Necaz Software</span>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script type="module" src="firebase-status.js"></script>
+
+</body>
+</html>
