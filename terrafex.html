@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terrafex — Necaz Software</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,700;1,400&family=Geist+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="logo">
+    <span class="logo-mark">◣</span>
+    <span class="logo-text">Necaz<span class="accent">.</span>Software</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="apps.html" class="active">Apps</a></li>
+    <li><a href="blog.html">Blog</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="index.html#contact">Contact</a></li>
+  </ul>
+  <div class="nav-status">
+    <span class="status-dot"></span>
+    <span>drinking coffee</span>
+  </div>
+</nav>
+
+<main>
+  <section class="app-detail">
+
+    <div class="app-hero">
+      <div>
+        <div class="app-title-row">
+          <h1>Terra<em class="italic">fex</em></h1>
+          <img src="Images/Terrafex photos/terrafex_logo_1024.png" alt="Terrafex" class="app-title-logo">
+        </div>
+        <p class="tagline">— shape the land. flood it. break it.</p>
+        <p>Terrafex is a pixel-art world sandbox. You get a tile world with seven elevation bands, from deep sea to mountain peak, and a set of powers to do whatever you want to it: raise ground, carve trenches, grow mountains, pour water, drop meteors, erupt volcanoes, shake the whole thing with an earthquake.</p>
+        <p>The name is coined from <em class="italic">terra</em> + <em class="italic">-fex</em> (as in <em class="italic">artifex</em>, <em class="italic">pontifex</em>) — world-maker. It's built in Flutter with the Flame engine, and it runs on a real per-tile simulation rather than scripted effects: water finds the lowest point it can reach and pools there, basins fill bottom-up to a waterline, and once a basin is full the next drop spills over the rim and runs downhill. Every drop of water is worth exactly one unit — it never thins out, never multiplies. Only the map edges create or destroy it.</p>
+        <div class="hero-actions" style="margin-top: 2rem;">
+          <a href="#feedback" class="btn btn-primary">Leave an idea →</a>
+        </div>
+        <p class="beta-note">Terrafex is <strong>in development</strong>. The Windows build is playable and being worked on daily; the Android build comes next. No public release yet.</p>
+        <div class="project-platforms" style="margin-top: 1.5rem;">
+          <span>▸ Windows — in development</span>
+          <span>▸ Android — soon</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <h2>Screenshots</h2>
+      <div class="screenshots-wrapper">
+        <div class="screenshots screenshots-horizontal">
+          <div class="screenshot"><img src="Images/Terrafex photos/Screenshot 2026-08-23 115559.png" alt="Terrafex screenshot 1" loading="lazy"></div>
+          <div class="screenshot"><img src="Images/Terrafex photos/Screenshot 2026-08-23 115704.png" alt="Terrafex screenshot 2" loading="lazy"></div>
+          <div class="screenshot"><img src="Images/Terrafex photos/Screenshot 2026-08-23 115736.png" alt="Terrafex screenshot 3" loading="lazy"></div>
+          <div class="screenshot"><img src="Images/Terrafex photos/Screenshot 2026-08-23 115813.png" alt="Terrafex screenshot 4" loading="lazy"></div>
+          <div class="screenshot"><img src="Images/Terrafex photos/Screenshot 2026-08-23 115838.png" alt="Terrafex screenshot 5" loading="lazy"></div>
+          <div class="screenshot"><img src="Images/Terrafex photos/Screenshot 2026-08-23 125419.png" alt="Terrafex screenshot 6" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <h2>What's already in</h2>
+      <div class="updates-list">
+        <div class="update">
+          <div class="update-version">Terrain</div>
+          <div class="update-content">
+            <h4>Seven elevation bands, edited live</h4>
+            <p>Raise, lower and mountain brushes reshape the world tile by tile, from the sea floor at z=-3 up to peaks at z=3. The z=0 band is deliberately kept dry — that's the beach.</p>
+          </div>
+        </div>
+        <div class="update">
+          <div class="update-version">Water</div>
+          <div class="update-content">
+            <h4>Water that behaves like water</h4>
+            <p>Each poured unit is a real particle. It searches for the lowest tile it can actually reach — travelling freely through existing water, never uphill — and settles there. Slopes drain, basins fill bottom-up, waterlines rise a tile at a time, and full basins overflow at their lowest rim.</p>
+          </div>
+        </div>
+        <div class="update">
+          <div class="update-version">Ocean</div>
+          <div class="update-content">
+            <h4>Infinite sea, finite ponds</h4>
+            <p>The sea floods in from the map borders and is genuinely infinite. A pond you pour yourself is not — it's tracked separately, so digging a channel to it can never turn it into a spawner.</p>
+          </div>
+        </div>
+        <div class="update">
+          <div class="update-version">Waves</div>
+          <div class="update-content">
+            <h4>Sprite waves that seek the shore</h4>
+            <p>Animated foam crests spawn out at sea, aim at the nearest real shoreline, and get denser closer to the coast. Some run up onto the beach tile and fade out at its far edge. Edit the terrain under one and it vanishes instantly.</p>
+          </div>
+        </div>
+        <div class="update">
+          <div class="update-version">Moisture</div>
+          <div class="update-content">
+            <h4>Ground that gets wet, then dries</h4>
+            <p>Water soaking into dry ground darkens the tile and fades back to normal over time — separate from actual standing water.</p>
+          </div>
+        </div>
+        <div class="update">
+          <div class="update-version">Disasters</div>
+          <div class="update-content">
+            <h4>Meteor, volcano, earthquake</h4>
+            <p>The meteor is a real falling sprite with a growing ground shadow and an ember trail before it lands, then digs a wide crater that bottoms out at the world floor. Water flows back into the hole afterwards instead of snapping into place.</p>
+          </div>
+        </div>
+        <div class="update">
+          <div class="update-version">Look</div>
+          <div class="update-content">
+            <h4>Pixel-realist rendering</h4>
+            <p>Nearest-neighbour filtering, no anti-aliasing, square pixels everywhere — hand-made sprites for effects and flora, batched so thousands of them stay cheap to draw.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <h2>Planned</h2>
+      <div class="updates-list">
+        <div class="update">
+          <div class="update-version">Soon</div>
+          <div class="update-content">
+            <h4>Android build</h4>
+            <p>Touch controls and a UI that works on a phone screen.</p>
+          </div>
+        </div>
+        <div class="update">
+          <div class="update-version">Soon</div>
+          <div class="update-content">
+            <h4>More powers</h4>
+            <p>Additional terrain and disaster tools, with better brush feedback.</p>
+          </div>
+        </div>
+        <div class="update">
+          <div class="update-version">Later</div>
+          <div class="update-content">
+            <h4>Life on the map</h4>
+            <p>Things that grow, spread and react to the world you've built instead of just sitting on it.</p>
+          </div>
+        </div>
+        <div class="update">
+          <div class="update-version">Later</div>
+          <div class="update-content">
+            <h4>Save &amp; share worlds</h4>
+            <p>Keep a world between sessions and hand it to someone else.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <h2>Send feedback</h2>
+      <div class="reviews-empty" style="margin-bottom: 3rem;">
+        Reviews unavailable — Terrafex is still in development.<br>Come back when there's something to break.
+      </div>
+
+      <form class="feedback-form" id="feedback" onsubmit="event.preventDefault(); alert('Demo form. Connect to a service to receive real messages.');">
+        <h3>Leave an idea or report a bug</h3>
+        <p>All feedback goes straight to me.</p>
+
+        <div class="form-group">
+          <label for="rev-name">Name or alias</label>
+          <input type="text" id="rev-name" placeholder="your name here" required>
+        </div>
+
+        <div class="form-group">
+          <label for="rev-type">Type of message</label>
+          <select id="rev-type">
+            <option>Improvement idea</option>
+            <option>Bug / Defect</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="rev-message">Your message</label>
+          <textarea id="rev-message" placeholder="write your message here..." required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Send →</button>
+      </form>
+    </div>
+
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <div class="logo">
+        <span class="logo-mark">◣</span>
+        <span class="logo-text">Necaz<span class="accent">.</span>Software</span>
+      </div>
+    </div>
+    <div>
+      <h4>Navigate</h4>
+      <a href="index.html">Home</a>
+      <a href="apps.html">Apps</a>
+      <a href="blog.html">Blog</a>
+      <a href="about.html">About</a>
+    </div>
+    <div>
+      <h4>Apps</h4>
+      <a href="quickorg.html">QuickOrg2</a>
+      <a href="nyxbo.html">Nyxbo</a>
+      <a href="terrafex.html">Terrafex</a>
+      <a href="minutes-to-die.html">Minutes to Die</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© Necaz Software</span>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script type="module" src="firebase-status.js"></script>
+
+</body>
+</html>
